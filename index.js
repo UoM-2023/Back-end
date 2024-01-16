@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const apiRoutes = require('./routes/apiRoutes');
+const healthRoute = require('./routes/healthChecker');
 
 
 // Configurations
@@ -18,6 +19,7 @@ app.use(cors());
 
 // Api Routes
 app.use('/', apiRoutes);
+app.use('/health', healthRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
