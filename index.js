@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const apiRoutes = require('./routes/apiRoutes');
 const healthRoute = require('./routes/healthChecker');
 const config = require('./config/config');
-const Database = require('./database/database')
+const { connection } = require('./database/database')
 
 // Configurations
 const app = express();
@@ -18,8 +18,8 @@ app.use(bodyParser.json({ extended:true }));
 app.use(bodyParser.urlencoded({ extended:true }));
 app.use(cors());
 
-const database = new Database(config);
-database.connect();
+
+connection();
 
 // Api Routes
 app.use('/', apiRoutes);
