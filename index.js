@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const apiRoutes = require('./routes/apiRoutes');
 const healthRoute = require('./routes/healthChecker');
 const config = require('./config/config');
-const { connection } = require('./database/database')
+const database = require('./database/database')
 
 // Configurations
 const app = express();
@@ -18,8 +18,14 @@ app.use(bodyParser.json({ extended:true }));
 app.use(bodyParser.urlencoded({ extended:true }));
 app.use(cors());
 
+// Check database with dummy connections
+async function runScripts() {
+    await database.createTable();
+    await database.insertDummyData();
+    await database.readData();
+}
 
-connection();
+runScripts();
 
 // Api Routes
 app.use('/', apiRoutes);
