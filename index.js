@@ -3,13 +3,13 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const config = require('./config/config');
+const config = require('./config/db.config');
 const database = require('./database/database')
 
 // Imported Routes
-const apiRoutes = require('./routes/apiRoutes');
-const healthRoute = require('./routes/healthChecker');
-const authRoute = require('./routes/auth');
+const apiRoutes = require('./routes/test.route');
+const healthRoute = require('./routes/health.route');
+const authRoute = require('./routes/auth.route');
 
 // Configurations
 const app = express();
