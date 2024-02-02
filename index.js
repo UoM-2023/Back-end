@@ -3,10 +3,13 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const apiRoutes = require('./routes/apiRoutes');
-const healthRoute = require('./routes/healthChecker');
-const config = require('./config/config');
+const config = require('./config/db.config');
 const database = require('./database/database')
+
+// Imported Routes
+const apiRoutes = require('./routes/test.route');
+const healthRoute = require('./routes/health.route');
+const authRoute = require('./routes/auth.route');
 
 // Configurations
 const app = express();
@@ -20,9 +23,7 @@ app.use(cors());
 
 // Check database with dummy connections
 async function runScripts() {
-    await database.createTable();
-    await database.insertDummyData();
-    await database.readData();
+    await database.connection();
 }
 
 runScripts();
@@ -30,6 +31,7 @@ runScripts();
 // Api Routes
 app.use('/', apiRoutes);
 app.use('/health', healthRoute);
+app.use('/auth', authRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
