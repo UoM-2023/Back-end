@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(bodyParser.json({ extended:true }));
 app.use(bodyParser.urlencoded({ extended:true }));
 app.use(cors());
+app.use(cookieParser());
 
 // Check database with dummy connections
 async function runScripts() {
