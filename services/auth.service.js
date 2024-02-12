@@ -37,7 +37,7 @@ async function register (req,res){
     }
 }
 
-async function login(req,res,next){
+async function login(req,res){
     try{
         await sql.connect(dbConfig);
 
@@ -51,9 +51,25 @@ async function login(req,res,next){
         const checkValidPassword = bcrypt.compareSync(password,user.Password);
         if (checkValidPassword) {
             user.Password = undefined;
-            const jsontoken = jwt.sign({user: user}, process.env.SECRET_KEY, { expiresIn: '30m'} );
-            res.cookie('token', jsontoken, { httpOnly: true, secure: true, SameSite: 'strict' , expires: new Date(Number(new Date()) + 30*60*1000) });
-            res.json({token: jsontoken});
+            //Creating token
+            const accessToken = jwt.sign({
+                user: user
+            }, process.env.SECRET_KEY, { 
+                expiresIn: '10m'
+            });
+
+            // Refresh Token
+            const refreshToken = jwt.sign({
+                user: user
+            },process.env.REFRESH_TOKEN_SECRET, { 
+                expiresIn: '1d'
+            });
+            res.cookie('jwt', refreshToken, {
+                httpOnly: true,
+                sameSite: 'None', secure: true,
+                maxAge: 24 * 60 * 60 * 1000
+            });
+            return res.json({ token: accessToken, refeshToken: refreshToken });
             // return res.redirect('/main')
         } else {
             return res.status(401).json({message:'Invalid Password'});
@@ -66,4 +82,32 @@ async function login(req,res,next){
     }
 }
 
-module.exports = { register, login, verifyToken};
+async function refresh(req,res){
+    try{
+        if (req.cookies?.jwt){
+            const refreshToken = req.cookies.jwt;
+
+            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,
+                (err, decoded) => {
+                    if (err) {
+                        return res.status(406).json({ message: 'Unauthorized' });
+                    }
+                    else {
+                        // Correct token we send a new access token
+                        const accessToken = jwt.sign({
+                            user: user
+                        }, process.env.SECRET_KEY, {
+                            expiresIn: '10m'
+                        });
+                        return res.json({ token: accessToken });
+                    }
+                })
+        } else {
+            return res.status(406).json({ message: 'Unauthorized' });
+        }
+    } catch(err){
+        console.error('Database operation failed',err);
+        return res.status(201).json({message:'Server Error'});
+    }
+}
+module.exports = { register, login, refresh, verifyToken};
