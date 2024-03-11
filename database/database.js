@@ -12,6 +12,21 @@ async function connection() {
     }
 }
 
+const getUserByID = async (userID) => {
+    const checkUserQuery = 'SELECT * FROM User_Credentials WHERE UserID = @UserID';
+
+    try {
+        const request = new sql.Request();
+        request.input('UserID', sql.VarChar, userID);
+        const result = await request.query(checkUserQuery);
+
+        // Returning the first user found or null if none found
+        return result.recordset.length > 0 ? result.recordset[0] : null;
+    } catch (error) {
+        console.error('Database error:', error);
+        return res.status(201).json({message:'Server error'});
+    }
+};
 // async function createTable(){
 //     try {
 //         await sql.connect(config);
@@ -63,6 +78,7 @@ async function connection() {
 
 module.exports = { 
     connection,
+    getUserByID
 //     createTable,
 //     insertDummyData,
 //     readData

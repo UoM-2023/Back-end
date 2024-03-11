@@ -48,7 +48,6 @@ async function login(req,res){
 
         const user = await getUserByID(userID);
 
-
         if (!user){
             return res.status(401).json({message: 'Invalid username'});
         } 
