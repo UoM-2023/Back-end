@@ -46,11 +46,13 @@ async function login(req,res){
 
         const {userID,password} = req.body;
 
+        // Check user is exists with "getUserByID" function in database.js
         const user = await getUserByID(userID);
 
         if (!user){
             return res.status(401).json({message: 'Invalid username'});
         } 
+        // If User name is correct compare password with the entered password
         const checkValidPassword = bcrypt.compareSync(password,user.Password);
         if (checkValidPassword) {
             user.Password = undefined;
