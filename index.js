@@ -12,7 +12,9 @@ const apiRoutes = require('./routes/test.route');
 const healthRoute = require('./routes/health.route');
 const authRoute = require('./routes/auth.route');
 const financeRoute = require('./routes/finance.route');
-
+const guestRoute = require('./routes/guest.route');
+const facilityRoute = require('./routes/facility.route');
+const reservationRoute = require('./routes/reservation.route');
 // Configurations
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,6 +38,9 @@ app.use('/', apiRoutes);
 app.use('/health', healthRoute);
 app.use('/auth', authRoute);
 app.use('/finance',financeRoute);
+app.use('/guest',guestRoute);
+app.use('/facility',facilityRoute);
+app.use('/reservation',reservationRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
