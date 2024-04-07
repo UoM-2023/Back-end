@@ -6,6 +6,7 @@ async function addNewFund (req,res) {
         await sql.connect(dbConfig);
 
         const request = new sql.Request();
+        
         const {
             fundID,
             fundName,
@@ -36,4 +37,21 @@ async function addNewFund (req,res) {
     }
 }
 
-module.exports = addNewFund;
+async function getAllFunds(req,res){
+    try{
+        console.log("called");
+        await sql.connect(dbConfig);
+
+        const request = new sql.Request();
+
+        const query = `SELECT * FROM Fund_Types`;
+
+        const result = await request.query(query);
+
+        return res.status(200).json({result : result.recordset});
+    } catch(error){
+        console.error('Failed to retrieve funds', error);
+        return res.status(500).json({ message: 'Failed to retrieve funds' });
+    }
+}
+module.exports = {addNewFund, getAllFunds};

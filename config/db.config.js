@@ -5,22 +5,21 @@ try {
     console.error("Error loading .env file:", error.message);
 }
 
-const server = process.env.AZURE_SQL_SERVER
-const database = process.env.AZURE_SQL_DATABASE
-const port = parseInt(process.env.AZURE_SQL_PORT)
-const user = process.env.AZURE_SQL_USER
-const password = process.env.AZURE_SQL_PASSWORD
+// const server = process.env.AZURE_SQL_SERVER
+// const database = process.env.AZURE_SQL_DATABASE
+// const port = parseInt(process.env.AZURE_SQL_PORT)
+// const user = process.env.AZURE_SQL_USER
+// const password = process.env.AZURE_SQL_PASSWORD
+
+const host = process.env.MYSQL_HOST
+const user = process.env.MYSQL_USER
+const password = process.env.MYSQL_PASSWORD
+const database = process.env.MYSQL_DATABASE
 
 const config = {
-    server,
-    port,
-    database,
+    host,
     user,
     password,
-    options: {
-        encrypt: true,
-        trustServerCertificate: false,
-        
-    }
+    database
 }
 module.exports = config;

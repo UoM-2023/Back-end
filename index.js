@@ -27,15 +27,16 @@ app.use(cookieParser());
 // Check database with dummy connections
 async function runScripts() {
     await database.connection();
+    // await database.getUserByID('AF0001A');
 }
 
 runScripts();
 
 // Api Routes
-app.use('/', apiRoutes);
-app.use('/health', healthRoute);
-app.use('/auth', authRoute);
-app.use('/finance',financeRoute);
+// app.use('/', apiRoutes);
+// app.use('/health', healthRoute);
+// app.use('/auth', authRoute);
+// app.use('/finance',financeRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
