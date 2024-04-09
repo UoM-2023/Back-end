@@ -33,10 +33,10 @@ async function runScripts() {
 runScripts();
 
 // Api Routes
-// app.use('/', apiRoutes);
-// app.use('/health', healthRoute);
-// app.use('/auth', authRoute);
-// app.use('/finance',financeRoute);
+app.use('/', apiRoutes);
+app.use('/health', healthRoute);
+app.use('/auth', authRoute);
+app.use('/finance',financeRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
