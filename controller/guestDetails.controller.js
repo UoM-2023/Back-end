@@ -15,9 +15,9 @@ async function addGuestDetails (req,res) {
            
         } = req.body;
         
-        console.log(unitID,residentName,guestName,vehicleNo,arrivalDate)
-        const insertQuery = `INSERT INTO Guest_Details (Unit_ID, Resident_Name, Guest_Name, Vehicle_Number,Arrival_Date,) VALUES (@Unit_ID, @Resident_Name, @Guest_Name, @Vehicle_Number, @Arrival_Date)`
-        
+        console.log(unitID,residentName,guestName,vehicleNo,arrivalDate);
+        const insertQuery = `INSERT INTO Guest_Details (Unit_ID, Resident_Name, Guest_Name, Vehicle_Number,Arrival_Date) VALUES (@Unit_ID, @Resident_Name, @Guest_Name, @Vehicle_Number, @Arrival_Date)`
+        console.log(unitID,insertQuery);
         request.input('Unit_ID', sql.VarChar, unitID);
         request.input('Resident_Name', sql.VarChar, residentName);
         request.input('Guest_Name', sql.VarChar, guestName);

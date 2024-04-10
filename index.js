@@ -29,6 +29,7 @@ app.use(cookieParser());
 // Check database with dummy connections
 async function runScripts() {
     await database.connection();
+    // await database.getUserByID('AF0001A');
 }
 
 runScripts();
