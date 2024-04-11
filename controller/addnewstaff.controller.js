@@ -84,7 +84,10 @@ async function getAllStaffDetails(req, res) {
 
     const result = await connection.query(query);
     console.log(result);
-    return res.status(200).json({ result: result.recordset });
+    return res.status(200).json({
+      result: result.recordset,
+      message: "Successfully retrieved Staff Details",
+    });
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);
     return res
