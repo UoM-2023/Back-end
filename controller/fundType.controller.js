@@ -47,7 +47,7 @@ async function getAllFunds(req,res){
 
         const result = await connection.query(query);
         console.log(result);
-        return res.status(200).json({result : result.recordset});
+        return res.status(200).json({result : result});
 
     } catch(error){
         console.error('Failed to retrieve funds', error);
