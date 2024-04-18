@@ -88,9 +88,12 @@ async function getAllResidentsDetails(req, res) {
 
     const query = `SELECT * FROM Residents_Information`;
 
-    const result = await connection.query(query);
-    console.log(result);
-    return res.status(200).json({ result: result.recordset });
+    const [result] = await connection.query(query);
+    //console.log(result);
+
+    return res.status(200).json({
+      result: result,
+    });
   } catch (error) {
     console.error("Failed to retrieve Residents Details", error);
     return res

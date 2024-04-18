@@ -1,5 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
+const { rows } = require("mssql");
 
 async function addNewStaff(req, res) {
   try {
@@ -82,11 +83,12 @@ async function getAllStaffDetails(req, res) {
 
     const query = `SELECT * FROM Staff_Information`;
 
-    const result = await connection.query(query);
-    console.log(result);
+    const [result] = await connection.query(query);
+    //console.log(result);
+    //res.send(result);
+
     return res.status(200).json({
-      result: result.recordset,
-      message: "Successfully retrieved Staff Details",
+      result: result,
     });
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);
@@ -95,4 +97,27 @@ async function getAllStaffDetails(req, res) {
       .json({ message: "Failed to retrieve Staff Details" });
   }
 }
-module.exports = { addNewStaff, getAllStaffDetails };
+
+// DELETE Function
+
+async function deleteStaff(req, res) {
+  try {
+    console.log("Deleted..");
+
+    const connection = await mysql.createConnection(dbConfig);
+
+    const del = "DELETE FROM Staff_Information WHERE staffID = ?";
+
+    await connection.query(del, [req.params.staffID], (err, rows, fields) => {
+      if (!err) res.send("Deleted Successfully");
+      //console.log("Deleted Successfully");
+      else console.log(err);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// EDIT Function
+
+module.exports = { addNewStaff, getAllStaffDetails, deleteStaff };

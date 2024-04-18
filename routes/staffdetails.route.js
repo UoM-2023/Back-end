@@ -9,4 +9,7 @@ router.post("/addNewStaff", newStaff.addNewStaff);
 // Get Requests
 router.get("/addNewStaff", newStaff.getAllStaffDetails);
 
+// Delete Requests
+router.delete("/addNewStaff/:staffID", newStaff.deleteStaff);
+
 module.exports = router;
