@@ -12,6 +12,7 @@ const apiRoutes = require('./routes/test.route');
 const healthRoute = require('./routes/health.route');
 const authRoute = require('./routes/auth.route');
 const financeRoute = require('./routes/finance.route');
+const maintenanceRoute = require('./routes/maintenance.route');
 
 // Configurations
 const app = express();
@@ -36,6 +37,7 @@ app.use('/', apiRoutes);
 app.use('/health', healthRoute);
 app.use('/auth', authRoute);
 app.use('/finance',financeRoute);
+app.use('/maintenance', maintenanceRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
