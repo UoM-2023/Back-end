@@ -4,6 +4,6 @@ const addResidentialUnit=require('../controller/residentialUnits.controller');
 const router=express.Router();
 
 console.log(addResidentialUnit);
-router.post('/residentialUnits',addResidentialUnit);
+router.post('/residentialUnit',addResidentialUnit);
 
 module.exports=router;

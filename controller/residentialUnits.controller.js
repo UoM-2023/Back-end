@@ -15,15 +15,15 @@ async function addResidentialUnit (req,res){
             status,
         }=req.body;
 
-        console.log(unit,block,building,category,residentName,status)
-        const insertQuery=`INSERT INTO Residential_Units (unit,block,building,category,residentName,status) VALUES (@unit,@block,@building,@category,@residentName,@status)`
+        console.log(unit,block,building,category,status)
+        const insertQuery=`INSERT INTO Residential_Unit (unit,blockNo,building,category,available) VALUES (@unit,@blockno,@building,@category,@available)`
 
-        request.input('Unit',sql.VarChar, unit);
-        request.input('Block',sql.VarChar, block);
-        request.input('Building',sql.VarChar, building);
-        request.input('Category',sql.VarChar, category);
-        request.input('ResidentName',sql.VarChar, residentName);
-        request.input('Status',sql.VarChar, status);
+        request.input('unit',sql.VarChar, unit);
+        request.input('blockno',sql.VarChar, block);
+        request.input('building',sql.VarChar, building);
+        request.input('category',sql.VarChar, category);
+        request.input('residentName',sql.VarChar, residentName);
+        request.input('available',sql.VarChar, status);
         await request.query(insertQuery);
 
         return res.status(200).json({message: 'Residential Unit Successfully Added'});
