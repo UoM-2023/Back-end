@@ -120,4 +120,5 @@ async function deleteStaff(req, res) {
 
 // EDIT Function
 
+
 module.exports = { addNewStaff, getAllStaffDetails, deleteStaff };
