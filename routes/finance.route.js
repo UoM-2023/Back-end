@@ -20,5 +20,9 @@ router.get('/editFunds', newFund.getAllFunds);
 router.get('/newExpense',newExpense.getAllExpenses);
 router.get('/revenue',newRevenue.getAllRevenues);
 router.get('/payment',newPayment.getAllPayments);
+router.get('/editFunds/:id', newFund.getAFund);
+
+// Put Requests
+router.put('/editFunds/:id', newFund.updateFund);
 
 module.exports = router;
