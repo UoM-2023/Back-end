@@ -1,34 +1,35 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
 async function addNewFund (req,res) {
     try {
-        await sql.connect(dbConfig);
+        
+        const connection = await mysql.createConnection(dbConfig);
 
-        const request = new sql.Request();
         const {
-            fundID,
             fundName,
             chargedBy,
             amount,
             timePeriod,
-            modifiedDate,
             modifiedBy
         } = req.body;
         
-        console.log(fundID,fundName,chargedBy,amount,timePeriod,modifiedBy,modifiedDate)
-        const insertQuery = `INSERT INTO Fund_Types (fundID, fundName, chargedBy, amount, timePeriod, modifiedDate, modifiedBy) VALUES (@FundID, @FundName, @ChargedBy, @Amount, @TimePeriod, @ModifiedDate, @ModifiedBy)`
-        
-        request.input('FundID', sql.VarChar, fundID);
-        request.input('FundName', sql.VarChar, fundName);
-        request.input('chargedBy', sql.VarChar, chargedBy);
-        request.input('Amount', sql.Money, amount);
-        request.input('TimePeriod', sql.Int, timePeriod);
-        request.input('ModifiedDate', sql.Date, modifiedDate);
-        request.input('ModifiedBy', sql.VarChar, modifiedBy);
-        await request.query(insertQuery);
+        console.log(fundName,chargedBy,amount,timePeriod,modifiedBy)
 
-        return res.status(200).json({message: 'Fund Successfully Added'});
+        const add = 'INSERT INTO fundTypes (fundName, chargedBy, amount, timePeriod, modified_by, modified_date) VALUES (?, ?, ?, ?, ?,  CURRENT_TIMESTAMP)';
+        
+       
+        try {
+            await connection.query(add, [fundName, chargedBy, amount, timePeriod, modifiedBy ]);
+            return res.status(200).json({message: 'Fund Successfully Added'});
+
+        } catch (error) {
+            console.error('Failed to save data',error);
+            return res.status(201).json({message:'Process Failed'});
+        }
+
+        
+        
 
     } catch (error) {
         console.error('Failed to save data',error);
@@ -36,4 +37,76 @@ async function addNewFund (req,res) {
     }
 }
 
-module.exports = addNewFund;
+async function getAllFunds(req,res){
+    try{
+        console.log("called");
+
+        const connection = await mysql.createConnection(dbConfig);
+
+        const query = `SELECT * FROM fundTypes`;
+
+        const result = await connection.query(query);
+        console.log(result);
+        return res.status(200).json({result : result});
+
+    } catch(error){
+        console.error('Failed to retrieve funds', error);
+        return res.status(500).json({ message: 'Failed to retrieve funds' });
+    }
+}
+
+async function getAFund(req,res){
+    try{
+        console.log("Called with id");
+
+        const connection = await mysql.createConnection(dbConfig);
+
+        const query = `SELECT * FROM fundTypes WHERE fund_id = ?`;
+        const id = req.params.id;
+
+        const result = await connection.query(query, [id]);
+        console.log(result);
+        return res.status(200).json({result : result});
+
+    } catch(error){
+        console.error('Failed to retrieve fund', error);
+        return res.status(500).json({ message: 'Failed to retrieve fund' });
+    }
+}
+
+async function updateFund(req,res){
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        const {
+            fundName,
+            chargedBy,
+            amount,
+            timePeriod,
+            modifiedBy
+        } = req.body;
+
+        const id = req.params.id;
+
+        console.log(fundName,chargedBy,amount,timePeriod,modifiedBy);
+
+        const query = 'UPDATE fundTypes SET fundName = ?, chargedBy = ?, amount = ?, timePeriod = ?, modified_by = ?, modified_date = CURRENT_TIMESTAMP WHERE fund_id = ?'
+
+        try {
+            await connection.query(query, [fundName, chargedBy, amount, timePeriod, modifiedBy, id]);
+            return res.status(200).json({message: 'Fund Successfully Updated'});
+
+        } catch (error) {
+            console.error('Failed to save data',error);
+            return res.status(201).json({message:'Process Failed'});
+        }
+
+
+
+    } catch (error) {
+        console.error('Failed to retrieve fund', error);
+        return res.status(500).json({ message: 'Failed to update fund' });        
+    }
+}
+
+module.exports = {addNewFund, getAllFunds, getAFund, updateFund};
