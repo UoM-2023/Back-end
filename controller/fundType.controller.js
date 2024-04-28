@@ -109,4 +109,25 @@ async function updateFund(req,res){
     }
 }
 
-module.exports = {addNewFund, getAllFunds, getAFund, updateFund};
+async function deleteFund(req,res){
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        const id = req.params.id;
+
+        const query = 'DELETE FROM fundTypes WHERE fund_id = ?'
+
+        try {
+            await connection.query(query, [id]);
+            return res.status(200).json({message: 'Process Failed'});
+        } catch (error) {
+            console.error('Failed to save data',error);
+            return res.status(201).json({message:'Process Failed'});
+        }
+
+    } catch (error) {
+        console.error('Failed to retrieve fund', error);
+        return res.status(500).json({ message: 'Failed to update fund' }); 
+    }
+}
+
+module.exports = {addNewFund, getAllFunds, getAFund, updateFund, deleteFund};
