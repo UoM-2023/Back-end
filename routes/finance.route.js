@@ -25,4 +25,7 @@ router.get('/editFunds/:id', newFund.getAFund);
 // Put Requests
 router.put('/editFunds/:id', newFund.updateFund);
 
+// Delete Routes
+router.delete('/editFunds/:id', newFund.deleteFund);
+
 module.exports = router;
