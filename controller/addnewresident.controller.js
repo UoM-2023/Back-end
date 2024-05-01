@@ -101,4 +101,8 @@ async function getAllResidentsDetails(req, res) {
       .json({ message: "Failed to retrieve Residents Details" });
   }
 }
+
+// Edit Function
+
+
 module.exports = { addNewResident, getAllResidentsDetails };
