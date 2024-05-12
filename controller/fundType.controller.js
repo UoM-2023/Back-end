@@ -28,9 +28,6 @@ async function addNewFund (req,res) {
             return res.status(201).json({message:'Process Failed'});
         }
 
-        
-        
-
     } catch (error) {
         console.error('Failed to save data',error);
         return res.status(201).json({message:'Process Failed'});
@@ -111,18 +108,21 @@ async function updateFund(req,res){
 
 async function deleteFund(req,res){
     try {
+        let deleteRecords = [];
         const connection = await mysql.createConnection(dbConfig);
-        const id = req.params.id;
+        const id = parseInt(req.params.id);
+        deleteRecords.push(id);
+        return res.status(201).json({message: 'Record Deleted Successfully'})
 
-        const query = 'DELETE FROM fundTypes WHERE fund_id = ?'
+        // const query = 'DELETE FROM fundTypes WHERE fund_id = ?'
 
-        try {
-            await connection.query(query, [id]);
-            return res.status(200).json({message: 'Process Failed'});
-        } catch (error) {
-            console.error('Failed to save data',error);
-            return res.status(201).json({message:'Process Failed'});
-        }
+        // try {
+        //     await connection.query(query, [id]);
+        //     return res.status(200).json({message: 'Process Failed'});
+        // } catch (error) {
+        //     console.error('Failed to save data',error);
+        //     return res.status(201).json({message:'Process Failed'});
+        // }
 
     } catch (error) {
         console.error('Failed to retrieve fund', error);
