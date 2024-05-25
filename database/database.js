@@ -1,4 +1,4 @@
-const sql = require('mssql');
+
 const mysql = require('mysql2/promise');
 
 const config = require('../config/db.config');
@@ -16,13 +16,13 @@ async function connection() {
     } 
 }
 
-const getUserByID = async (req,res,userID) => {
+const getUserByID = async (userID) => {
     const checkUserQuery = 'SELECT * FROM User_Credentials WHERE UserID = ?';
 
     try {
-        const connection = mysql.createConnection(config);
-         
-        const [rows, fiels] = await connection.execute(checkUserQuery,[userID]);
+        const connection = await mysql.createConnection(config);
+        console.log(userID);
+        const [rows,fields] = await connection.query(checkUserQuery,[userID]);
 
         console.log(rows[0]);
         
@@ -30,8 +30,7 @@ const getUserByID = async (req,res,userID) => {
         return rows.length > 0 ? rows[0] : null;
 
     } catch (error) {
-        console.error('Database error:', error);
-        return res.status(500).json({message:'Server error'});
+        return console.error('Database error:', error);
     }
 };
 

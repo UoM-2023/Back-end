@@ -13,8 +13,8 @@ exports.verifyToken = async (req,res,next) => {
                 console.log('Invalid token');
                 return res.status(401).json({message: 'Invalid Token'});
             } else {
-                console.log(authData.user.role);
-                const role = authData.user.role;
+                console.log(authData.user.userRole);
+                const role = authData.user.userRole;
                 // More user roles to add
                 if(role === "admin"){
  
