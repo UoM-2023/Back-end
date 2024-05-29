@@ -77,7 +77,7 @@ async function addNewStaff(req, res) {
 
 async function getAllStaffDetails(req, res) {
   try {
-    console.log("called");
+    console.log("Staff Get func Called");
 
     const connection = await mysql.createConnection(dbConfig);
 
@@ -102,7 +102,7 @@ async function getAllStaffDetails(req, res) {
 
 async function getStaffById(req, res) {
   try {
-    console.log("Called with ID");
+    console.log("Called with Staff ID");
 
     const connection = await mysql.createConnection(dbConfig);
 

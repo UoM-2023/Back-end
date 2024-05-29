@@ -82,7 +82,7 @@ async function addNewResident(req, res) {
 
 async function getAllResidentsDetails(req, res) {
   try {
-    console.log("called");
+    console.log("Resident Get func Called");
 
     const connection = await mysql.createConnection(dbConfig);
 
@@ -102,7 +102,142 @@ async function getAllResidentsDetails(req, res) {
   }
 }
 
-// Edit Function
+// Get By Id Function
 
+async function getResidentById(req, res) {
+  try {
+    console.log("Called with Resident ID");
 
-module.exports = { addNewResident, getAllResidentsDetails };
+    const connection = await mysql.createConnection(dbConfig);
+
+    const query = `SELECT * FROM Residents_Information WHERE residentID = ?`;
+    const id = req.params.residentID;
+
+    const result = await connection.query(query, [id]);
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error) {
+    console.error("Failed to retrieve Resident Details", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to retrieve Resident Details " });
+  }
+}
+
+// DELETE Function
+
+async function deleteResident(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const id = req.params.residentID;
+
+    const query = "DELETE FROM Residents_Information WHERE residentID = ?";
+
+    try {
+      await connection.query(query, [id]);
+      return res
+        .status(200)
+        .json({ message: "Resident Details Successfully Deleted" });
+    } catch (error) {
+      console.error("Failed to delete Resident's data", error);
+      return res
+        .status(500)
+        .json({ message: "Failed to delete Resident details" });
+    }
+  } catch (error) {
+    console.error("Failed to connect to database", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to delete Resident details" });
+  }
+}
+
+// EDIT Function
+
+async function updateResident(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const {
+      building,
+      block_no,
+      unit_category,
+      unit_no,
+      first_name,
+      middle_name,
+      last_name,
+      name_with_initials,
+      gender,
+      dob,
+      nic,
+      member_type,
+      email,
+      mobile_no,
+      Address,
+    } = req.body;
+
+    const id = req.params.residentID;
+
+    console.log(
+      building,
+      block_no,
+      unit_category,
+      unit_no,
+      first_name,
+      middle_name,
+      last_name,
+      name_with_initials,
+      gender,
+      dob,
+      nic,
+      member_type,
+      email,
+      mobile_no,
+      Address
+    );
+
+    const query =
+      "UPDATE Residents_Information SET building = ?, block_no = ?, unit_category = ?, unit_no = ?, first_name = ?, middle_name = ?, last_name = ?, name_with_initials = ?, gender = ?, dob = ?, nic = ?, member_type = ?, email = ?, mobile_no = ?, Address = ? WHERE residentID = ?";
+
+    try {
+      await connection.query(query, [
+        building,
+        block_no,
+        unit_category,
+        unit_no,
+        first_name,
+        middle_name,
+        last_name,
+        name_with_initials,
+        gender,
+        dob,
+        nic,
+        member_type,
+        email,
+        mobile_no,
+        Address,
+        [id],
+      ]);
+      return res
+        .status(200)
+        .json({ message: "Resident Details Successfully Updated" });
+    } catch (error) {
+      console.error("Failed to save data", error);
+      return res.status(201).json({ message: "Process Failed..." });
+    }
+  } catch (error) {
+    console.error("Failed to retrieve Resident Details", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update Resident Details" });
+  }
+}
+
+module.exports = {
+  addNewResident,
+  getAllResidentsDetails,
+  getResidentById,
+  deleteResident,
+  updateResident,
+};
