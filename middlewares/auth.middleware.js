@@ -1,29 +1,28 @@
 const jwt = require('jsonwebtoken');
 
-exports.verifyToken = async (req,res,next) => {
+function verifyToken(req,res,next){
     const token = req.cookies.token;
     console.log(token);
 
-    if (token === undefined){
-        console.log('Unothorized User');
-        return res.status(401).json({message: "Access Denied! Unauthorized User"});
-    } else {
-        jwt.verify(token, process.env.SECRET_KEY, (err, authData)=>{
-            if (err){
-                console.log('Invalid token');
-                return res.status(401).json({message: 'Invalid Token'});
-            } else {
-                console.log(authData.user.role);
-                const role = authData.user.role;
-                // More user roles to add
-                if(role === "admin"){
- 
-                    next();
-                } else{
-                    return res.json({message: "Access Denied!"});
-            }
+    if (!token) {
+        return res.status(403).json({message:'No token provided'})
+    }
+    jwt.verify(token, process.env.SECRET_KEY, (err,decoded)=>{
+        if (err) {
+            return res.status(500).json({message:'Failed to authorize token'})
         }
-    })
-}
+        req.user = decoded;
+        next();
+    });
 
 }
+
+function checkRole(roles){
+    return (req,res,next) => {
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({message:'Access Denied'})
+        }
+        next();
+    }
+}
+module.exports = { verifyToken, checkRole }
