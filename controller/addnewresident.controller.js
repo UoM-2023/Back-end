@@ -7,6 +7,7 @@ async function addNewResident(req, res) {
 
     const {
       residentID,
+      UnitID,
       building,
       block_no,
       unit_category,
@@ -26,6 +27,7 @@ async function addNewResident(req, res) {
 
     console.log(
       residentID,
+      UnitID,
       building,
       block_no,
       unit_category,
@@ -44,11 +46,12 @@ async function addNewResident(req, res) {
     );
 
     const add =
-      "INSERT INTO Residents_Information (residentID, building, block_no, unit_category, unit_no, first_name, middle_name, last_name, name_with_initials, gender, dob, nic, member_type, email, mobile_no, Address ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      "INSERT INTO Residents_Information (residentID, UnitID, building, block_no, unit_category, unit_no, first_name, middle_name, last_name, name_with_initials, gender, dob, nic, member_type, email, mobile_no, Address ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     try {
       await connection.query(add, [
         residentID,
+        UnitID,
         building,
         block_no,
         unit_category,
@@ -160,6 +163,7 @@ async function updateResident(req, res) {
     const connection = await mysql.createConnection(dbConfig);
 
     const {
+      UnitID,
       building,
       block_no,
       unit_category,
@@ -180,6 +184,7 @@ async function updateResident(req, res) {
     const id = req.params.residentID;
 
     console.log(
+      UnitID,
       building,
       block_no,
       unit_category,
@@ -198,10 +203,11 @@ async function updateResident(req, res) {
     );
 
     const query =
-      "UPDATE Residents_Information SET building = ?, block_no = ?, unit_category = ?, unit_no = ?, first_name = ?, middle_name = ?, last_name = ?, name_with_initials = ?, gender = ?, dob = ?, nic = ?, member_type = ?, email = ?, mobile_no = ?, Address = ? WHERE residentID = ?";
+      "UPDATE Residents_Information SET UnitID = ?, building = ?, block_no = ?, unit_category = ?, unit_no = ?, first_name = ?, middle_name = ?, last_name = ?, name_with_initials = ?, gender = ?, dob = ?, nic = ?, member_type = ?, email = ?, mobile_no = ?, Address = ? WHERE residentID = ?";
 
     try {
       await connection.query(query, [
+        UnitID,
         building,
         block_no,
         unit_category,
