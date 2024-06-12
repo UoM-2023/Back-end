@@ -2,16 +2,19 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 const { rows } = require("mssql");
 
+// POST Function
+
 async function usercredentials(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
     const { UserID, userRole, userPassword, Confirmpassword } = req.body;
+    const added_time = req.body.added_time || new Date();
 
-    console.log(UserID, userRole, userPassword, Confirmpassword);
+    console.log(UserID, userRole, userPassword, added_time, Confirmpassword);
 
     const add =
-      "INSERT INTO User_Credentials (UserID, userRole, userPassword ) VALUES (?, ?, ?)";
+      "INSERT INTO UserCredentials (UserID, userRole, userPassword, Confirmpassword, added_time ) VALUES (?, ?, ?, ?, ?)";
 
     try {
       await connection.query(add, [
@@ -19,13 +22,16 @@ async function usercredentials(req, res) {
         userRole,
         userPassword,
         Confirmpassword,
+        added_time,
       ]);
       return res
         .status(200)
-        .json({ message: "New User Account Successfully Added" });
+        .json({ message: "Your account has been successfully created!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue creating your account." });
     }
   } catch (error) {
     console.error("Failed to save data", error);
@@ -41,7 +47,7 @@ async function getAllUserCredentials(req, res) {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM User_Credentials`;
+    const query = `SELECT * FROM UserCredentials`;
 
     const [result] = await connection.query(query);
     //console.log(result);
@@ -66,7 +72,7 @@ async function getAllUserCredentialsById(req, res) {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM User_Credentials WHERE UserID = ?`;
+    const query = `SELECT * FROM UserCredentials WHERE UserID = ?`;
     const id = req.params.UserID;
 
     const result = await connection.query(query, [id]);
@@ -76,7 +82,7 @@ async function getAllUserCredentialsById(req, res) {
     console.error("Failed to retrieve User Credentials Details", error);
     return res
       .status(500)
-      .json({ message: "Failed to retrieve Staff Details " });
+      .json({ message: "Failed to retrieve User Credentials Details " });
   }
 }
 
@@ -88,7 +94,7 @@ async function deleteUserCredentials(req, res) {
 
     const id = req.params.UserID;
 
-    const query = "DELETE FROM User_Credentials WHERE UserID = ?";
+    const query = "DELETE FROM UserCredentials WHERE UserID = ?";
 
     try {
       await connection.query(query, [id]);
@@ -99,7 +105,7 @@ async function deleteUserCredentials(req, res) {
       console.error("Failed to delete User Credentials data", error);
       return res
         .status(500)
-        .json({ message: "Failed to delete staff details" });
+        .json({ message: "Failed to delete User Credentials details" });
     }
   } catch (error) {
     console.error("Failed to connect to database", error);
@@ -115,14 +121,14 @@ async function updateUserCredentials(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const { userRole, userPassword, Confirmpassword } = req.body;
+    const { userRole, userPassword, added_time } = req.body;
 
     const id = req.params.UserID;
 
-    console.log(userRole, userPassword, Confirmpassword);
+    console.log(userRole, userPassword, added_time);
 
     const query =
-      "UPDATE User_Credentials SET userPassword = ?, userRole = ? WHERE UserID = ?";
+      "UPDATE UserCredentials SET userPassword = ?, userRole = ? WHERE UserID = ?";
 
     try {
       await connection.query(query, [userRole, userPassword, [id]]);
@@ -135,7 +141,9 @@ async function updateUserCredentials(req, res) {
     }
   } catch (error) {
     console.error("Failed to retrieve User Credentials", error);
-    return res.status(500).json({ message: "Failed to update Staff Details" });
+    return res
+      .status(500)
+      .json({ message: "Failed to update User Credentials Details" });
   }
 }
 

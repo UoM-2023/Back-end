@@ -67,10 +67,10 @@ async function addNewResident(req, res) {
       ]);
       return res
         .status(200)
-        .json({ message: "New Residents Details Successfully Added" });
+        .json({ message: "New Residents Details Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      return res.status(201).json({ message: "Oops! There was an issue Adding Residents Details" });
     }
   } catch (error) {
     console.error("Failed to save data", error);

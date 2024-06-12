@@ -62,14 +62,14 @@ async function addNewStaff(req, res) {
       ]);
       return res
         .status(200)
-        .json({ message: "New Staff Details Successfully Added" });
+        .json({ message: "New Staff Details Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      return res.status(201).json({ message: "Oops! There was an issue Adding Staff Details" });
     }
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res.status(201).json({ message: "Oops! There was an issue Adding Staff Details" });
   }
 }
 
@@ -209,14 +209,14 @@ async function updateStaff(req, res) {
       ]);
       return res
         .status(200)
-        .json({ message: "Staff Details Successfully Updated" });
+        .json({ message: "Staff Details Successfully Updated!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed..." });
+      return res.status(201).json({ message: "Oops! There was an issue Updating Staff Details" });
     }
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);
-    return res.status(500).json({ message: "Failed to update Staff Details" });
+    return res.status(500).json({ message: "Oops! Failed to update Staff Details." });
   }
 }
 
