@@ -32,6 +32,6 @@ router.get('/utilityDetails', getUtitlityDetails)
 router.put('/editFunds/:id', newFund.updateFund);
 
 // Delete Routes
-router.delete('/editFunds/:id', newFund.deleteFund);
+//router.delete('/editFunds/:id', newFund.deleteFund);
 
 module.exports = router;
