@@ -15,6 +15,7 @@ const financeRoute = require("./routes/finance.route");
 const residentsdetailsRoute = require("./routes/residentsdetails.route");
 const staffdetailsRoute = require("./routes/staffdetails.route");
 const userCredentialsRoute = require("./routes/usercredentials.route");
+const testRoute = require("./routes/test.route")
 
 // Configurations
 const app = express();
@@ -43,6 +44,7 @@ app.use("/finance", financeRoute);
 app.use("/residentsDetails", residentsdetailsRoute);
 app.use("/staffDetails", staffdetailsRoute);
 app.use("/userCredentials", userCredentialsRoute);
+app.use("/testing", testRoute)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -24,7 +24,7 @@ async function register (req,res){
             // Encrypt the password
             const hashedPassword = await bcrypt.hash(password,8);
             console.log(userID,hashedPassword);
-            const insertQuery = `INSERT INTO User_Credentials (UserID,userPassword,userRole,added_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
+            const insertQuery = `INSERT INTO User_Credentials (UserID,userPassword,role,added_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
             
             try {
                 await connection.query(insertQuery,[userID,hashedPassword,role]);
@@ -112,7 +112,7 @@ async function refresh(req,res){
                 const user = getUserByID(decoded.user);
                 const accessToken = jwt.sign({ 
                     user: decoded.user,
-                    role: user.userRole // Include user role in the access token payload
+                    role: user.role // Include user role in the access token payload
                 }, process.env.SECRET_KEY, { expiresIn: '30m' });
 
                 // Set access token as a cookie in the response
