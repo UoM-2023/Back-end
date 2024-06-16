@@ -12,6 +12,7 @@ router.get(
   "/addNewResident/updateResident/:residentID",
   newResident.getResidentById
 );
+router.get("/viewResident/:UnitID", newResident.getResidentByUnitID);
 
 // Delete Requests
 router.delete(

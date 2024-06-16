@@ -73,7 +73,9 @@ async function addNewResident(req, res) {
         .json({ message: "New Residents Details Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Oops! There was an issue Adding Residents Details" });
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue Adding Residents Details" });
     }
   } catch (error) {
     console.error("Failed to save data", error);
@@ -105,7 +107,7 @@ async function getAllResidentsDetails(req, res) {
   }
 }
 
-// Get By Id Function
+// Get By Id Function (residentID)
 
 async function getResidentById(req, res) {
   try {
@@ -116,7 +118,7 @@ async function getResidentById(req, res) {
     const query = `SELECT * FROM Residents_Information WHERE residentID = ?`;
     const id = req.params.residentID;
 
-    const result = await connection.query(query, [id]);
+    const [result] = await connection.query(query, [id]);
     console.log(result);
     return res.status(200).json({ result: result });
   } catch (error) {
@@ -124,6 +126,29 @@ async function getResidentById(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Resident Details " });
+  }
+}
+
+// Get By Id Function (UnitID)
+
+async function getResidentByUnitID(req, res) {
+  try {
+    console.log("Called with Unit ID");
+
+    const connection = await mysql.createConnection(dbConfig);
+
+    const query = `SELECT * FROM Residents_Information WHERE UnitID = ?`;
+    const id = req.params.UnitID;
+
+    const [result] = await connection.query(query, [id]);
+    
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error) {
+    console.error("Failed to retrieve Resident Details by UnitID", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to retrieve Resident  Details by UnitID" });
   }
 }
 
@@ -244,6 +269,7 @@ module.exports = {
   addNewResident,
   getAllResidentsDetails,
   getResidentById,
+  getResidentByUnitID,
   deleteResident,
   updateResident,
 };
