@@ -6,6 +6,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const config = require("./config/db.config");
 const database = require("./database/database");
+const http = require('http');
+const socketIo = require('socket.io');
 
 // Imported Routes
 const apiRoutes = require("./routes/test.route");
@@ -19,6 +21,8 @@ const testRoute = require("./routes/test.route")
 
 // Configurations
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const PORT = process.env.PORT || 3001;
 
 dotenv.config();
@@ -46,6 +50,6 @@ app.use("/staffDetails", staffdetailsRoute);
 app.use("/userCredentials", userCredentialsRoute);
 app.use("/testing", testRoute)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
