@@ -65,4 +65,51 @@ async function getUtitlityDetails (req,res){
         return res.status(201).json({message:'Process Failed'});
     }
 }
-module.exports = { addNewUtility, getUtitlityDetails };
+
+
+async function getOneUtilityDetail(req, res) {
+    try {
+        const utilityId = req.params.id; // Get the utility_id from request parameters
+        console.log("Called GetAUtility",utilityId);
+        const connection = await mysql.createConnection(dbConfig);
+
+        // Execute the query and wait for the results
+        const [utilityDetailResults] = await connection.query(`SELECT * FROM utilityDetails WHERE utility_id = ?`, [utilityId]);
+        console.log(utilityDetailResults);
+
+        // If no utility is found, return a 404 error
+        if (utilityDetailResults.length === 0) {
+            return res.status(404).json({ message: 'Utility not found' });
+        }
+
+        const [utilityPricesResults] = await connection.query(`SELECT * FROM utility_prices WHERE utility_id = ?`, [utilityId]);
+        console.log(utilityPricesResults);
+
+        // Process the results
+        const utility = utilityDetailResults[0];
+        const prices = utilityPricesResults.map(price => ({
+            price_id: price.price_id,
+            price_range: price.price_range,
+            base_price: price.base_price,
+            unit_price: price.unit_price
+        }));
+
+        const utilityData = {
+            utility_id: utility.utility_id,
+            utility_name: utility.utility_name,
+            modified_date: utility.modified_date,
+            modified_by: utility.modified_by,
+            prices: prices
+        };
+
+        console.log("Utility data combined",utilityData);
+
+        return res.status(200).json({result: utilityData});
+
+    } catch (error) {
+        console.error('Failed to retrieve data', error);
+        return res.status(500).json({ message: 'Process Failed' });
+    }
+}
+
+module.exports = { addNewUtility, getUtitlityDetails, getOneUtilityDetail };

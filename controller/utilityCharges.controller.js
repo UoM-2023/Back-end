@@ -12,11 +12,11 @@ async function addUtilityCharge (req,res){
             electricityUsage,
             waterUsage,
             gasUsage,
-            staff_id,
+            staffID,
             remark
         } = req.body;
 
-        console.log(staff_id);
+        console.log(staffID);
 
         let totalCost = 0.0;
         let gasCost = 0.0;
@@ -41,7 +41,7 @@ async function addUtilityCharge (req,res){
         await connection.query('INSERT INTO balance (unit_id, utility_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE utility_balance = ?', [unit_id, newBalance, newBalance]);
 
         // Inserint to main utility table
-        const [utilityResult] = await connection.query('INSERT INTO monthUtilityCharge (unit_id, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',[unit_id, previousBalance, totalCost, newBalance, staff_id])
+        const [utilityResult] = await connection.query('INSERT INTO monthUtilityCharge (unit_id, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',[unit_id, previousBalance, totalCost, newBalance, staffID])
 
         console.log(utilityResult);
         // Take the utility charge id and insert values of gas, water and electricity

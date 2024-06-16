@@ -3,7 +3,7 @@ const newFund = require('../controller/fundType.controller');
 const newExpense = require('../controller/expenses.controller');
 const newRevenue  = require('../controller/revenue.controller');
 const newPayment  = require('../controller/payments.controller');
-const { addNewUtility, getUtitlityDetails } = require('../controller/utilityDetails.controller');
+const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../controller/utilityDetails.controller');
 const { addUtilityCharge } = require('../controller/utilityCharges.controller');
 const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
@@ -22,11 +22,12 @@ router.post('/addUtilityUsage', addUtilityCharge)
 
 // Get Requests
 router.get('/editFunds', verifyToken, checkRole(['finance_manager','admin']), newFund.getAllFunds);
-router.get('/newExpense',newExpense.getAllExpenses);
+router.get('/newExpense', verifyToken, checkRole(['finance_manager','admin']), newExpense.getAllExpenses);
 router.get('/revenue',newRevenue.getAllRevenues);
 router.get('/payment',newPayment.getAllPayments);
 router.get('/editFunds/:id', newFund.getAFund);
-router.get('/utilityDetails', getUtitlityDetails)
+router.get('/utilityDetails', getUtitlityDetails);
+router.get('/utilityDetails/:id', getOneUtilityDetail);
 
 
 // Put Requests

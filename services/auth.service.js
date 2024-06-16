@@ -61,26 +61,26 @@ async function login(req,res){
                 userId: user.userID,
                 role: user.role
             }, process.env.SECRET_KEY, { 
-                expiresIn: '30m'
+                expiresIn: '2m'
             });
             res.cookie('token', accessToken, {
                 httpOnly: true,
                 sameSite: 'None', 
                 secure: true,
-                maxAge: 30 * 60 * 1000 
+                maxAge: 2 * 60 * 1000 
             });
 
             // Refresh Token
             const refreshToken = jwt.sign({
                 user: user.userID
             },process.env.REFRESH_TOKEN_SECRET, { 
-                expiresIn: '1d'
+                expiresIn: '2m'
             });
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 sameSite: 'None', 
                 secure: true,
-                maxAge: 24 * 60 * 60 * 1000
+                maxAge: 2 * 60 * 1000
             });
             return res.json({ token: accessToken, refeshToken: refreshToken });
 
@@ -113,10 +113,10 @@ async function refresh(req,res){
                 const accessToken = jwt.sign({ 
                     user: decoded.user,
                     role: user.role // Include user role in the access token payload
-                }, process.env.SECRET_KEY, { expiresIn: '30m' });
+                }, process.env.SECRET_KEY, { expiresIn: '2m' });
 
                 // Set access token as a cookie in the response
-                res.cookie('token', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 30 * 60 * 1000 });
+                res.cookie('token', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 2 * 60 * 1000 });
                 return res.status(200).json({ token: accessToken });
             }
         });
@@ -128,6 +128,7 @@ async function refresh(req,res){
 }
 async function logout(req,res){
     try {
+        console.log("Logout called");
         res.clearCookie('token');
         res.clearCookie('refresh_token');
         return res.status(200).json({ message: 'Logged out successfully' });
