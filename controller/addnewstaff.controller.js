@@ -109,7 +109,7 @@ async function getStaffById(req, res) {
     const query = `SELECT * FROM Staff_Information WHERE staffID = ?`;
     const id = req.params.staffID;
 
-    const result = await connection.query(query, [id]);
+    const [result] = await connection.query(query, [id]);
     console.log(result);
     return res.status(200).json({ result: result });
   } catch (error) {
