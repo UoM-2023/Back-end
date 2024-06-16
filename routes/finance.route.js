@@ -5,6 +5,7 @@ const newRevenue  = require('../controller/revenue.controller');
 const newPayment  = require('../controller/payments.controller');
 const { addNewUtility, getUtitlityDetails } = require('../controller/utilityDetails.controller');
 const { addUtilityCharge } = require('../controller/utilityCharges.controller');
+const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
 
 
@@ -20,7 +21,7 @@ router.post('/utilityDetails', addNewUtility)
 router.post('/addUtilityUsage', addUtilityCharge)
 
 // Get Requests
-router.get('/editFunds', newFund.getAllFunds);
+router.get('/editFunds', verifyToken, checkRole(['finance_manager','admin']), newFund.getAllFunds);
 router.get('/newExpense',newExpense.getAllExpenses);
 router.get('/revenue',newRevenue.getAllRevenues);
 router.get('/payment',newPayment.getAllPayments);
@@ -32,6 +33,6 @@ router.get('/utilityDetails', getUtitlityDetails)
 router.put('/editFunds/:id', newFund.updateFund);
 
 // Delete Routes
-//router.delete('/editFunds/:id', newFund.deleteFund);
+// router.delete('/editFunds/:id', newFund.deleteFund);
 
 module.exports = router;
