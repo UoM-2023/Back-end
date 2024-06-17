@@ -1,58 +1,162 @@
-const sql = require('mssql');
-const dbConfig = require('../config/db.config');
+const mysql = require("mysql2/promise");
+const dbConfig = require("../config/db.config");
 
-async function addNewExpense (req,res) {
+// POST Function
+
+async function addNewExpense(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const {
+      expense_id,
+      amount,
+      eType,
+      payment_method,
+      staff_id,
+      added_date,
+      remark,
+    } = req.body;
+
+    console.log(
+      expense_id,
+      amount,
+      eType,
+      payment_method,
+      staff_id,
+      added_date,
+      remark
+    );
+    const add =
+      "INSERT INTO expenses (expense_id, amount, eType, payment_method, staff_id, added_date, remark) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
+
     try {
-        sql.connect(dbConfig);
-
-        const request = new sql.Request();
-        
-        const {
-            reference_no,
-            amount,
-            expenses_type,
-            payment_method,
-            staff_id,
-            approved,
-            approved_date
-        } = req.body;
-        
-        console.log(reference_no,amount, expenses_type, payment_method, staff_id, approved, approved_date)
-        const insertQuery = `INSERT INTO Expenses (reference_no, amount, expenses_type, payment_method, staff_id, approved, approved_date) VALUES (@reference_no, @amount, @expenses_type, @payment_method, @staff_id, @approved, @approved_date)`
-        
-        request.input('reference_no', sql.VarChar, reference_no);
-        request.input('amount', sql.Float, amount);
-        request.input('expenses_type', sql.VarChar, expenses_type);
-        request.input('payment_method', sql.VarChar, payment_method);
-        request.input('staff_id', sql.VarChar, staff_id);
-        request.input('approved', sql.VarChar, approved);
-        request.input('approved_date', sql.Date, approved_date);
-
-        request.query(insertQuery);
-
-        return res.status(200).json({message: 'Expense Successfully Added'});
-
+      await connection.query(add, [
+        expense_id,
+        amount,
+        eType,
+        payment_method,
+        staff_id,
+        added_date,
+        remark,
+      ]);
+      return res
+        .status(200)
+        .json({ message: "New Expenses Successfully Added!" });
     } catch (error) {
-        console.error('Failed to save data',error);
-        return res.status(201).json({message:'Process Failed'});
+      console.error("Failed to save data", error);
+      return res.status(201).json({
+        message: "Oops! There was an issue Adding New Expenses Details",
+      });
     }
+  } catch (error) {
+    console.error("Failed to save data", error);
+    return res.status(201).json({
+      message: "Oops! There was an issue Adding New Expenses Details",
+    });
+  }
 }
 
-async function getAllExpenses(req,res) {
-    try{
-        await sql.connect(dbConfig);
+// GET all Function
 
-        const request = new sql.Request();
+async function getAllExpenses(req, res) {
+  try {
+    console.log("called");
 
-        const query = `SELECT * FROM Expenses`;
+    const connection = await mysql.createConnection(dbConfig);
 
-        const result =  await request.query(query);
+    const query = `SELECT * FROM expenses`;
 
-        return res.status(200).json({result : result.recordset});
+    const [result] = await connection.query(query);
 
-    } catch(error){
-        console.error('Failed to retrieve expenses', error);
-        return res.status(500).json({ message: 'Failed to retrieve expenses' });
-    }
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error) {
+    console.error("Failed to retrieve expenses", error);
+    return res.status(500).json({ message: "Failed to retrieve expenses" });
+  }
 }
-module.exports = {addNewExpense,getAllExpenses};
+
+// Get By Id Function
+
+async function getAExpensesByID(req, res) {
+  try {
+    console.log("Called with id");
+
+    const connection = await mysql.createConnection(dbConfig);
+
+    const query = `SELECT * FROM expenses WHERE id = ?`;
+    const id = req.params.id;
+
+    const [result] = await connection.query(query, [id]);
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error) {
+    console.error("Failed to retrieve expenses", error);
+    return res.status(500).json({ message: "Failed to retrieve expenses" });
+  }
+}
+
+// EDIT Function
+
+async function updateExpenses(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const {
+      expense_id,
+      amount,
+      eType,
+      payment_method,
+      staff_id,
+      added_date,
+      remark,
+    } = req.body;
+
+    const id = req.params.id;
+
+    console.log(
+      expense_id,
+      amount,
+      eType,
+      payment_method,
+      staff_id,
+      added_date,
+      remark
+    );
+
+    const query =
+      "UPDATE expenses SET expense_id = ?, amount = ?, eType = ?, payment_method = ?, staff_id = ?, added_date = CURRENT_TIMESTAMP, remark = ? WHERE id = ?";
+
+    try {
+      await connection.query(query, [
+        expense_id,
+        amount,
+        eType,
+        payment_method,
+        staff_id,
+        added_date,
+        id,
+      ]);
+      return res
+        .status(200)
+        .json({ message: "Expenses Details Successfully Updated!" });
+    } catch (error) {
+      console.error("Failed to save data", error);
+      return res.status(201).json({
+        message: "Oops! There was an issue Updating Expenses Details",
+      });
+    }
+  } catch (error) {
+    console.error("Failed to retrieve fund", error);
+    return res
+      .status(500)
+      .json({ message: "Oops! There was an issue Updating Expenses Details" });
+  }
+}
+
+module.exports = {
+  addNewExpense,
+  getAllExpenses,
+  getAExpensesByID,
+  updateExpenses,
+};
