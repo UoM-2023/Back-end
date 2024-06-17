@@ -4,9 +4,6 @@ const newExpense = require('../controller/expenses.controller');
 const newRevenue  = require('../controller/revenue.controller');
 const newPayment  = require('../controller/payments.controller');
 
-
-
-
 const router = express.Router();
 
 // Post Requests
