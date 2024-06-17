@@ -1,150 +1,155 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
-async function addGuestDetails (req,res) {
+
+//add guest details
+
+
+async function addGuestDetails(req, res) {
     try {
-        
         const connection = await mysql.createConnection(dbConfig);
 
         const {
-            unitID,
-            residentName,
-            guestName,
-            vehicleNo,
-            arrivalDate
+            guest_ID,
+            unit_ID,
+            resident_name,
+            guest_name,
+            guest_NIC,
+            vehicle_number,
+            check_In,
+            check_Out
         } = req.body;
-        
-        console.log(unitID,residentName,guestName,vehicleNo,arrivalDate)
-            //??? gaanen mokkd wenne?
-        const add = 'INSERT INTO fundTypes (unitID, residentName, guestName, vehicleNo, arrivalDate) VALUES (?, ?, ?, ?,   CURRENT_TIMESTAMP)';
-        
-       
-        try {
-            await connection.query(add, [unitID, residentName, guestName, vehicleNo, arrivalDate ]);
-            return res.status(200).json({message: 'Guest Successfully Added'});
 
+        console.log(guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
+
+        const add = 'INSERT INTO Guest_Details (guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
+
+        try {
+            await connection.query(add, [guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out]); 
+            return res.status(200).json({ message: 'Guest Successfully Added' });
         } catch (error) {
-            console.error('Failed to save data',error);
-            return res.status(201).json({message:'Process Failed'});
+            console.error('Failed to save data', error);
+            return res.status(201).json({ message: 'Process Failed' });
         }
 
-        
-        
-
     } catch (error) {
-        console.error('Failed to save data',error);
-        return res.status(201).json({message:'Process Failed'});
+        console.error('Failed to connect to database', error);
+        return res.status(201).json({ message: 'Process Failed' });
     }
 }
 
-async function getAllGuestDetails(req,res){
-    try{
+
+
+//get all guest details
+
+
+async function getAllGuestDetails(req, res) {
+    try {
         console.log("called");
 
         const connection = await mysql.createConnection(dbConfig);
 
-            //add table name to here
-        const query = `SELECT * FROM guestDetails`;
+        const query = `SELECT * FROM Guest_Details`;
 
-        const result = await connection.query(query);
+        const [result] = await connection.query(query); // Access the first element of the result array
+
         console.log(result);
-        return res.status(200).json({result : result.recordset});
+        return res.status(200).json({ result: result }); // Send the result directly without accessing `result.recordset`
 
-    } catch(error){
-        console.error('Failed to add guest details', error);
-        return res.status(500).json({ message: 'Failed to add guest details' });
+    } catch (error) {
+        console.error('Failed to retrieve guest details', error);
+        return res.status(500).json({ message: 'Failed to retrieve guest details' });
     }
 }
-module.exports = {addGuestDetails, getAllGuestDetails};
+
+
+
+//get a guest details
+
+async function getAGuestDetail(req, res) {
+    try {
+        console.log("Called with id");
+
+        const connection = await mysql.createConnection(dbConfig);
+
+        const query = `SELECT * FROM Guest_Details WHERE guest_ID = ?`;
+        const guest_ID = req.params.id; 
+
+        const [result] = await connection.query(query, [guest_ID]); 
+        console.log(result);
+        return res.status(200).json({ result: result });
+
+    } catch (error) {
+        console.error('Failed to get guest detail', error);
+        return res.status(500).json({ message: 'Failed to get guest detail' });
+    }
+}
+
+
+//update guest Details
+
+async function updateGuestDetails(req, res) {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        const {
+            guest_ID,
+            unit_ID,
+            resident_name,
+            guest_name,
+            guest_NIC,
+            vehicle_number,
+            check_In,
+            check_Out
+        } = req.body;
+
+        const id = req.params.id;
+
+        console.log(guest_ID, unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
+
+        const query = 'UPDATE Guest_Details SET guest_ID = ?, unit_ID = ?, resident_name = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, check_In = ?, check_Out = ? WHERE guest_ID = ?'; 
+
+        try {
+            await connection.query(query, [guest_ID, unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out, id]);
+            return res.status(200).json({ message: 'Guest Details Successfully Updated' });
+
+        } catch (error) {
+            console.error('Failed to update data', error);
+            return res.status(500).json({ message: 'Failed to update guest details' });
+        }
+
+    } catch (error) {
+        console.error('Failed to update guest details', error);
+        return res.status(500).json({ message: 'Failed to update guest details' });
+    }
+}
+
+
+//delete guest details
+
+async function deleteGuestDetails(req, res) {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        const id = req.params.id;
+
+        const query = 'DELETE FROM Guest_Details WHERE guest_ID = ?';
+
+        try {
+            await connection.query(query, [id]);
+            return res.status(200).json({ message: 'Guest Details Successfully Deleted' }); 
+        } catch (error) {
+            console.error('Failed to delete data', error);
+            return res.status(500).json({ message: 'Failed to delete data' });
+        }
+
+    } catch (error) {
+        console.error('Failed to delete guest details', error);
+        return res.status(500).json({ message: 'Failed to delete guest details' });
+    }
+}
 
 
 
 
+module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const sql = require('mssql');
-// const dbConfig = require('../config/db.config');
-
-// async function addGuestDetails (req,res) {
-//     try {
-//          sql.connect(dbConfig);
-
-//         const request = new sql.Request();
-//         const {
-//             unitID,
-//             residentName,
-//             guestName,
-//             vehicleNo,
-//             arrivalDate
-           
-//         } = req.body;
-        
-//         console.log(unitID,residentName,guestName,vehicleNo,arrivalDate);
-//         const insertQuery = `INSERT INTO Guest_Details (Unit_ID, Resident_Name, Guest_Name, Vehicle_Number,Arrival_Date) VALUES (@Unit_ID, @Resident_Name, @Guest_Name, @Vehicle_Number, @Arrival_Date)`
-//         console.log(unitID,insertQuery);
-//         request.input('Unit_ID', sql.VarChar, unitID);
-//         request.input('Resident_Name', sql.VarChar, residentName);
-//         request.input('Guest_Name', sql.VarChar, guestName);
-//         request.input('Vehicle_Number', sql.VarChar, vehicleNo);
-//         request.input('Arrival_Date', sql.Date,arrivalDate);
-        
-//         await request.query(insertQuery);
-
-//         return res.status(200).json({message: 'Fund Successfully Added'});
-
-//     } catch (error) {
-//         console.error('Failed to save data',error);
-//         return res.status(201).json({message:'Process Failed'});
-//     }
-// }
-
-// async function getAllGuestDetails(req,res){
-//     try{
-        
-//          await sql.connect(dbConfig);
-
-//         const request = new sql.Request();
-
-//         const query = `SELECT * FROM Guest_Details`;
-
-//         const result = await request.query(query);
-// console.log("results",result.recordset);
-//         return res.status(200).json(result.recordset);
-//     } catch(error){
-//         console.error('Failed to retrieve funds', error);
-//         return res.status(500).json({ message: 'Failed to retrieve funds' });
-//     }
-// }
-
-// module.exports = {addGuestDetails,getAllGuestDetails};

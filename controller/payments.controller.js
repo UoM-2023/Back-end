@@ -37,6 +37,8 @@ async function addNewPayment (req,res) {
     }
 }
 
+
+
 async function getAllPayments(req,res){
     try{
 
