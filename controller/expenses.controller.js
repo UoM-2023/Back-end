@@ -85,39 +85,22 @@ async function updateExpenses(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const {
-      expense_id,
-      amount,
-      eType,
-      payment_method,
-      staff_id,
-      added_date,
-      remark,
-    } = req.body;
+    const { amount, eType, payment_method, staff_id, remark } = req.body;
 
     const id = req.params.id;
 
-    console.log(
-      expense_id,
-      amount,
-      eType,
-      payment_method,
-      staff_id,
-      added_date,
-      remark
-    );
+    console.log(amount, eType, payment_method, staff_id, remark);
 
     const query =
-      "UPDATE expenses SET expense_id = ?, amount = ?, eType = ?, payment_method = ?, staff_id = ?, added_date = CURRENT_TIMESTAMP, remark = ? WHERE id = ?";
+      "UPDATE expenses SET amount = ?, eType = ?, payment_method = ?, staff_id = ?, remark = ? WHERE id = ?";
 
     try {
       await connection.query(query, [
-        expense_id,
         amount,
         eType,
         payment_method,
         staff_id,
-        added_date,
+        remark,
         id,
       ]);
       return res
