@@ -61,26 +61,26 @@ async function login(req,res){
                 userId: user.userID,
                 role: user.role
             }, process.env.SECRET_KEY, { 
-                expiresIn: '2m'
+                expiresIn: '30m'
             });
             res.cookie('token', accessToken, {
                 httpOnly: true,
                 sameSite: 'None', 
                 secure: true,
-                maxAge: 2 * 60 * 1000 
+                maxAge: 30 * 60 * 1000 
             });
 
             // Refresh Token
             const refreshToken = jwt.sign({
                 user: user.userID
             },process.env.REFRESH_TOKEN_SECRET, { 
-                expiresIn: '2m'
+                expiresIn: '2d'
             });
             res.cookie('refresh_token', refreshToken, {
                 httpOnly: true,
                 sameSite: 'None', 
                 secure: true,
-                maxAge: 2 * 60 * 1000
+                maxAge: 2 * 24 * 60 * 60 * 1000
             });
             return res.json({ token: accessToken, refeshToken: refreshToken });
 

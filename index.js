@@ -22,7 +22,13 @@ const testRoute = require("./routes/test.route")
 // Configurations
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 
 dotenv.config();
@@ -49,6 +55,21 @@ app.use("/residentsDetails", residentsdetailsRoute);
 app.use("/staffDetails", staffdetailsRoute);
 app.use("/userCredentials", userCredentialsRoute);
 app.use("/testing", testRoute)
+
+// Socket connection
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  // Join room based on userId
+  socket.on('joinRoom', (userId) => {
+      socket.join(userId);
+      console.log(`Socket ${socket.id} joined room ${userId}`);
+  });
+
+  socket.on('disconnect', () => {
+      console.log('Client disconnected:', socket.id);
+  });
+});
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

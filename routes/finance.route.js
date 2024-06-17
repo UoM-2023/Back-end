@@ -4,7 +4,7 @@ const newExpense = require('../controller/expenses.controller');
 const newRevenue  = require('../controller/revenue.controller');
 const newPayment  = require('../controller/payments.controller');
 const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../controller/utilityDetails.controller');
-const { addUtilityCharge } = require('../controller/utilityCharges.controller');
+const { addUtilityCharge, getUtilityCharges } = require('../controller/utilityCharges.controller');
 const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
 
@@ -17,8 +17,9 @@ router.post('/editFunds',newFund.addNewFund);
 router.post('/newExpense',newExpense.addNewExpense);
 router.post('/revenue',newRevenue.addNewRevenue);
 router.post('/payment',newPayment.addNewPayment);
-router.post('/utilityDetails', addNewUtility)
-router.post('/addUtilityUsage', addUtilityCharge)
+router.post('/utilityDetails', addNewUtility);
+router.post('/addUtilityUsage', addUtilityCharge);
+router.post('/getUtilityCharges', getUtilityCharges);
 
 // Get Requests
 router.get('/editFunds', verifyToken, checkRole(['finance_manager','admin']), newFund.getAllFunds);
@@ -28,6 +29,8 @@ router.get('/payment',newPayment.getAllPayments);
 router.get('/editFunds/:id', newFund.getAFund);
 router.get('/utilityDetails', getUtitlityDetails);
 router.get('/utilityDetails/:id', getOneUtilityDetail);
+router.get('/getUtilityCharges', getUtilityCharges);
+
 
 
 // Put Requests

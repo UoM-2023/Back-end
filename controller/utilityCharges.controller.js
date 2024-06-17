@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
+const io = require('../index')
 
 
 
@@ -9,6 +10,7 @@ async function addUtilityCharge (req,res){
         
         const {
             unit_id,
+            month,
             electricityUsage,
             waterUsage,
             gasUsage,
@@ -41,7 +43,7 @@ async function addUtilityCharge (req,res){
         await connection.query('INSERT INTO balance (unit_id, utility_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE utility_balance = ?', [unit_id, newBalance, newBalance]);
 
         // Inserint to main utility table
-        const [utilityResult] = await connection.query('INSERT INTO monthUtilityCharge (unit_id, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',[unit_id, previousBalance, totalCost, newBalance, staffID])
+        const [utilityResult] = await connection.query('INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',[unit_id, month, previousBalance, totalCost, newBalance, staffID])
 
         console.log(utilityResult);
         // Take the utility charge id and insert values of gas, water and electricity
@@ -49,6 +51,24 @@ async function addUtilityCharge (req,res){
         await connection.query('INSERT INTO gasUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, gasUsage, gasCost]);
         await connection.query('INSERT INTO waterUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, waterUsage, waterCost]);
         await connection.query('INSERT INTO elecUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, electricityUsage, electricityCost]);
+
+        // Socket connection
+        const [userResult] = await connection.query('SELECT UserName FROM Unit_Credentials WHERE UnitID = ?',[unit_id]);
+        const userId = userResult[0].user_id;
+        // Emit the update to the specific user's room
+        io.to(userId).emit('utilityUpdate', {
+            unit_id,
+            month,
+            previousBalance,
+            totalCost,
+            newBalance,
+            gasUsage,
+            gasCost,
+            waterUsage,
+            waterCost,
+            electricityUsage,
+            electricityCost
+        });
 
         return res.status(200).json({ message: 'Utility details updated successfully.' });
     } catch (error) {
@@ -85,4 +105,41 @@ async function calculateUtilityCost(utilityType, numOfUnits){
     }
 }
 
-module.exports = { addUtilityCharge }
+async function getUtilityCharges (req,res) {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        const query = `SELECT 
+            muc.unit_id,
+            muc.util_month,
+            muc.prev_balance,
+            muc.month_amount,
+            muc.tot_amount,
+            muc.staff_id,
+            muc.added_date,
+            gu.no_of_units AS gasUsage,
+            gu.month_amount AS gasCost,
+            wu.no_of_units AS waterUsage,
+            wu.month_amount AS waterCost,
+            eu.no_of_units AS electricityUsage,
+            eu.month_amount AS electricityCost
+        FROM 
+            monthUtilityCharge muc
+        LEFT JOIN 
+            gasUsage gu ON muc.id = gu.utilityCharge_id
+        LEFT JOIN 
+            waterUsage wu ON muc.id = wu.utilityCharge_id
+        LEFT JOIN 
+            elecUsage eu ON muc.id = eu.utilityCharge_id
+        ORDER BY muc.added_date DESC ;
+        `
+
+        const [result] = await connection.query(query);
+        console.log(result);
+        return res.status(200).json({ result: result });
+    } catch (error) {
+        console.error('Failed to retrieve data',error);
+        return res.status(201).json({message:'Process Failed'});
+    }
+}
+module.exports = { addUtilityCharge, getUtilityCharges }
