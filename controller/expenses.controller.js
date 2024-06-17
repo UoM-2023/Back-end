@@ -7,36 +7,19 @@ async function addNewExpense(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const {
-      expense_id,
-      amount,
-      eType,
-      payment_method,
-      staff_id,
-      added_date,
-      remark,
-    } = req.body;
+    const { expense_id, amount, eType, payment_method, staff_id, remark } =
+      req.body;
 
-    console.log(
-      expense_id,
-      amount,
-      eType,
-      payment_method,
-      staff_id,
-      added_date,
-      remark
-    );
+    console.log(expense_id, amount, eType, payment_method, staff_id, remark);
     const add =
-      "INSERT INTO expenses (expense_id, amount, eType, payment_method, staff_id, added_date, remark) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
+      "INSERT INTO expenses (amount, eType, payment_method, staff_id, added_date, remark) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
 
     try {
       await connection.query(add, [
-        expense_id,
         amount,
         eType,
         payment_method,
         staff_id,
-        added_date,
         remark,
       ]);
       return res
