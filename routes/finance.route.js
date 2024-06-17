@@ -8,18 +8,25 @@ const {
   getUtitlityDetails,
   getOneUtilityDetail,
 } = require("../controller/utilityDetails.controller");
-const { addUtilityCharge } = require("../controller/utilityCharges.controller");
+const { verifyToken, checkRole } = require("../middlewares/auth.middleware");
+const {
+  addUtilityCharge,
+  getUtilityCharges,
+} = require("../controller/utilityCharges.controller");
 const { verifyToken, checkRole } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
 // Post Requests
+router.get("/expenses", newExpense.getAllExpenses);
+router.get("/expenses/updateExpenses/:id", newExpense.getAExpensesByID);
 router.post("/editFunds", newFund.addNewFund);
 router.post("/newExpense", newExpense.addNewExpense);
 router.post("/revenue", newRevenue.addNewRevenue);
 router.post("/payment", newPayment.addNewPayment);
 router.post("/utilityDetails", addNewUtility);
 router.post("/addUtilityUsage", addUtilityCharge);
+router.post("/getUtilityCharges", getUtilityCharges);
 
 // Get Requests
 router.get(
@@ -39,8 +46,7 @@ router.get("/payment", newPayment.getAllPayments);
 router.get("/editFunds/:id", newFund.getAFund);
 router.get("/utilityDetails", getUtitlityDetails);
 router.get("/utilityDetails/:id", getOneUtilityDetail);
-router.get("/expenses", newExpense.getAllExpenses);
-router.get("/expenses/updateExpenses/:id", newExpense.getAExpensesByID);
+router.get("/getUtilityCharges", getUtilityCharges);
 
 // Put Requests
 router.put("/editFunds/updateFund/:id", newFund.updateFund);
