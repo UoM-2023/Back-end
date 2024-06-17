@@ -1,6 +1,5 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
-const { rows } = require("mssql");
 
 // POST Function
 
@@ -79,7 +78,7 @@ async function addNewStaff(req, res) {
   }
 }
 
-// GET Function
+// GET all Function
 
 async function getAllStaffDetails(req, res) {
   try {
@@ -117,6 +116,7 @@ async function getStaffById(req, res) {
 
     const [result] = await connection.query(query, [id]);
     console.log(result);
+    
     return res.status(200).json({ result: result });
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);

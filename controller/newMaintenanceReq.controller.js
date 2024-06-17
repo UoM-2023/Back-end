@@ -1,16 +1,19 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+// POST Function
+
 async function add_Maintenance_Request(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const { Unit_id, Resident_Name, MType, M_Description } = req.body;
+    const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
+      req.body;
 
-    console.log(Unit_id, Resident_Name, MType, M_Description);
-    const Mnt_Status = "Pending";
+    console.log(Unit_id, Resident_Name, MType, Mnt_Status, M_Description);
+
     const add =
-      "INSERT INTO Maintenance_Requests (Unit_id, Resident_Name, MType,Mnt_Status,requested_date, M_Description) VALUES (?, ?, ?,?,CURRENT_TIMESTAMP,?)";
+      "INSERT INTO Maintenance_Requests (Unit_id, Resident_Name, MType, Mnt_Status, requested_date, M_Description) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
 
     try {
       await connection.query(add, [
@@ -22,16 +25,20 @@ async function add_Maintenance_Request(req, res) {
       ]);
       return res
         .status(200)
-        .json({ message: "New Maintenance Request Successfully Added" });
+        .json({ message: "New Maintenance Request Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
       return res.status(201).json({ message: "Process Failed" });
     }
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res.status(201).json({
+      message: "Oops! There was an issue Adding Maintenance Request Details",
+    });
   }
-} 
+}
+
+// GET all Function
 
 async function get_All_Maintenance_Requests(req, res) {
   try {
@@ -53,82 +60,86 @@ async function get_All_Maintenance_Requests(req, res) {
   }
 }
 
+// Get By Id Function
+
 async function get_A_Maintenance_Request(req, res) {
   try {
     console.log("Called with id la la :", req.params.id);
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Maintenance_Requests WHERE Mnt_Request_id = ?`;
+    const query = `SELECT * FROM Maintenance_Requests WHERE id = ?`;
     const id = req.params.id;
 
     const [result] = await connection.query(query, [id]);
     console.log(result);
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Maintenance request not found" });
-    }
-
     return res.status(200).json({ result });
   } catch (error) {
     console.error("Failed to retrieve a maintenance request", error);
-    return res.status(500).json({ message: "Failed to retrieve maintenance request" });
+    return res
+      .status(500)
+      .json({ message: "Failed to retrieve maintenance request" });
   }
 }
 
 async function getMaintenanceRequestsByUser(req, res) {
-  
-
   try {
     const unitId = req.params.Unit_id;
 
     console.log(`Called with id Get maintenance: ${unitId}`);
-    console.log('Attempting to connect to the database...');
+    console.log("Attempting to connect to the database...");
     const connection = await mysql.createConnection(dbConfig);
 
-    console.log('Database connection established.');
+    console.log("Database connection established.");
 
     const query = `SELECT * FROM Maintenance_Requests WHERE Unit_id = ?`;
 
     console.log(`Executing query: ${query} with parameter ${unitId}`);
     const [rows] = await connection.query(query, [unitId]);
 
-    console.log('Query executed. Result:', rows);
+    console.log("Query executed. Result:", rows);
 
     if (rows.length === 0) {
-      console.log('No maintenance requests found for this Unit_id.');
+      console.log("No maintenance requests found for this Unit_id.");
       return res.status(404).json({ message: "Maintenance request not found" });
     }
 
     return res.status(200).json({ result: rows });
   } catch (error) {
     console.error("Failed to retrieve maintenance requests", error);
-    return res.status(500).json({ message: "Failed to retrieve maintenance requests", error: error.message });
+    return res.status(500).json({
+      message: "Failed to retrieve maintenance requests",
+      error: error.message,
+    });
   }
 }
 
-
-
+// EDIT Function
 
 async function update_Maintenance_Request(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
- 
-    const { Unit_id, Resident_Name, MType, M_Description } = req.body;
+
+    const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
+      req.body;
 
     const id = req.params.id;
 
-    console.log(Unit_id, Resident_Name, MType, M_Description);
+    console.log(Unit_id, Resident_Name, MType, Mnt_Status, M_Description);
 
     const query =
-      "UPDATE Maintenance_Requests SET Unit_id = ?, Resident_Name = ?, MType = ?,requested_date = CURRENT_TIMESTAMP,  M_Description = ? WHERE Mnt_Request_id = ?";
+      "UPDATE Maintenance_Requests SET Unit_id = ?, Resident_Name = ?, MType = ?, Mnt_Status = ?, M_Description = ? WHERE id = ?";
 
     try {
       await connection.query(query, [
         Unit_id,
         Resident_Name,
         MType,
+        // Mnt_Status,
+        "Pending",
         M_Description,
+        id,
       ]);
       return res
         .status(200)
@@ -144,16 +155,22 @@ async function update_Maintenance_Request(req, res) {
       .json({ message: "Failed to update maintenance request" });
   }
 }
+
+// DELETE Function
+
 async function delete_Maintenance_Request(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
+
     const id = req.params.id;
 
     const query = "DELETE FROM Maintenance_Requests WHERE id = ?";
 
     try {
       await connection.query(query, [id]);
-      return res.status(200).json({ message: "Process successfully deleted" });
+      return res
+        .status(200)
+        .json({ message: "Maintenance Requests successfully deleted!" });
     } catch (error) {
       console.error("Failed to save data", error);
       return res.status(201).json({ message: "Process Failed" });
@@ -166,6 +183,31 @@ async function delete_Maintenance_Request(req, res) {
   }
 }
 
+async function update_Maintenance_Request_Status(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const { id } = req.params;
+    const { Mnt_Status } = req.body;
+
+    const query = "UPDATE Maintenance_Requests SET Mnt_Status = ? WHERE id = ?";
+
+    try {
+      await connection.query(query, [Mnt_Status, id]);
+      return res
+        .status(200)
+        .json({ message: "Maintenance request status successfully updated" });
+    } catch (error) {
+      console.error("Failed to update status", error);
+      return res.status(500).json({ message: "Process Failed" });
+    }
+  } catch (error) {
+    console.error("Failed to update status", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update maintenance request status" });
+  }
+}
+
 module.exports = {
   add_Maintenance_Request,
   get_All_Maintenance_Requests,
@@ -173,4 +215,5 @@ module.exports = {
   getMaintenanceRequestsByUser,
   update_Maintenance_Request,
   delete_Maintenance_Request,
+  update_Maintenance_Request_Status,
 };
