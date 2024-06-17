@@ -7,9 +7,6 @@ const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../c
 const { addUtilityCharge, getUtilityCharges } = require('../controller/utilityCharges.controller');
 const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
-
-
-
 const router = express.Router();
 
 // Post Requests
