@@ -3,6 +3,9 @@ const newFund = require('../controller/fundType.controller');
 const newExpense = require('../controller/expenses.controller');
 const newRevenue  = require('../controller/revenue.controller');
 const newPayment  = require('../controller/payments.controller');
+const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../controller/utilityDetails.controller');
+const { addUtilityCharge, getUtilityCharges } = require('../controller/utilityCharges.controller');
+const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
@@ -11,18 +14,26 @@ router.post('/editFunds',newFund.addNewFund);
 router.post('/newExpense',newExpense.addNewExpense);
 router.post('/revenue',newRevenue.addNewRevenue);
 router.post('/payment',newPayment.addNewPayment);
+router.post('/utilityDetails', addNewUtility);
+router.post('/addUtilityUsage', addUtilityCharge);
+router.post('/getUtilityCharges', getUtilityCharges);
 
 // Get Requests
-router.get('/editFunds', newFund.getAllFunds);
-router.get('/newExpense',newExpense.getAllExpenses);
+router.get('/editFunds', verifyToken, checkRole(['finance_manager','admin']), newFund.getAllFunds);
+router.get('/newExpense', verifyToken, checkRole(['finance_manager','admin']), newExpense.getAllExpenses);
 router.get('/revenue',newRevenue.getAllRevenues);
 router.get('/payment',newPayment.getAllPayments);
 router.get('/editFunds/:id', newFund.getAFund);
+router.get('/utilityDetails', getUtitlityDetails);
+router.get('/utilityDetails/:id', getOneUtilityDetail);
+router.get('/getUtilityCharges', getUtilityCharges);
+
+
 
 // Put Requests
 router.put('/editFunds/:id', newFund.updateFund);
 
 // Delete Routes
-router.delete('/editFunds/:id', newFund.deleteFund);
+// router.delete('/editFunds/:id', newFund.deleteFund);
 
 module.exports = router;
