@@ -15,7 +15,7 @@ router.get(
   Completed_Maintenance_Request.get_All_Completed_Mnt_Request
 );
 router.get(
-  "/Completed_Mnt_Req/id",
+  "/Completed_Mnt_Req/:id",
   Completed_Maintenance_Request.get_A_Completed_Mnt_Request
 );
 router.put(
@@ -23,7 +23,7 @@ router.put(
   Completed_Maintenance_Request.update_completed_Mnt_Request
 );
 router.delete(
-  "/Completed_Mnt_Req/id",
+  "/Completed_Mnt_Req/:id",
   Completed_Maintenance_Request.delete_Completed_Mnt_Request
 );
 
@@ -59,6 +59,10 @@ router.get(
 router.get(
   "/New_Mnt_Req/:id",
   New_Maintenance_Request.get_A_Maintenance_Request
+);
+router.get(
+  "/New_Mnt_ReqDate/:id",
+  New_Maintenance_Request.get_A_Maintenance_RequestDate
 );
 router.get(
   "/New_Mnt_Req_By_User/:Unit_id",

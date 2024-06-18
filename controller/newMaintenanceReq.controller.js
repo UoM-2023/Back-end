@@ -46,7 +46,7 @@ async function get_All_Maintenance_Requests(req, res) {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Maintenance_Requests`;
+    const query = `SELECT * FROM Maintenance_Requests ORDER BY requested_date DESC`;
 
     const [result] = await connection.query(query);
     //console.log(result);
@@ -208,6 +208,29 @@ async function update_Maintenance_Request_Status(req, res) {
   }
 }
 
+// Get Requested Date By Id Function
+
+async function get_A_Maintenance_RequestDate(req, res) {
+  try {
+    console.log("Called get_A_Maintenance_RequestDate ID :", req.params.id);
+
+    const connection = await mysql.createConnection(dbConfig);
+
+    const query = `SELECT requested_date FROM Maintenance_Requests WHERE id = ?`;
+    const id = req.params.id;
+
+    const [result] = await connection.query(query, [id]);
+    console.log(result);
+
+    return res.status(200).json({ result });
+  } catch (error) {
+    console.error("Failed to retrieve a maintenance requested Date", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to retrieve maintenance requested Date" });
+  }
+}
+
 module.exports = {
   add_Maintenance_Request,
   get_All_Maintenance_Requests,
@@ -216,4 +239,5 @@ module.exports = {
   update_Maintenance_Request,
   delete_Maintenance_Request,
   update_Maintenance_Request_Status,
+  get_A_Maintenance_RequestDate,
 };

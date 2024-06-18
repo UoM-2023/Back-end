@@ -116,7 +116,7 @@ async function getStaffById(req, res) {
 
     const [result] = await connection.query(query, [id]);
     console.log(result);
-    
+
     return res.status(200).json({ result: result });
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);
