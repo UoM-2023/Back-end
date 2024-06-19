@@ -61,10 +61,6 @@ router.get(
   New_Maintenance_Request.get_A_Maintenance_Request
 );
 router.get(
-  "/New_Mnt_ReqDate/:Mnt_Request_id",
-  New_Maintenance_Request.get_A_Maintenance_RequestDate
-);
-router.get(
   "/New_Mnt_Req_By_User/:Unit_id",
   New_Maintenance_Request.getMaintenanceRequestsByUser
 );

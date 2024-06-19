@@ -172,8 +172,10 @@ async function delete_Maintenance_Request(req, res) {
         .status(200)
         .json({ message: "Maintenance Requests successfully deleted!" });
     } catch (error) {
-      console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      console.error("Failed to delete Maintenance Requests data", error);
+      return res
+        .status(201)
+        .json({ message: "Failed to delete Maintenance Requests data" });
     }
   } catch (error) {
     console.error("Failed to retrieve maintenance request", error);
@@ -208,36 +210,6 @@ async function update_Maintenance_Request_Status(req, res) {
   }
 }
 
-// Get Requested Date By Id Function (Mnt_Request_id)
-
-async function get_A_Maintenance_RequestDate(req, res) {
-  try {
-    console.log(
-      "Called get_A_Maintenance_RequestDate ID :",
-      req.params.Mnt_Request_id
-    );
-
-    const connection = await mysql.createConnection(dbConfig);
-
-    const query = `SELECT requested_date FROM Maintenance_Requests WHERE Mnt_Request_id = ?`;
-    const id = req.params.Mnt_Request_id;
-
-    const [result] = await connection.query(query, [id]);
-    console.log(result);
-
-    return res.status(200).json({ result: result });
-  } catch (error) {
-    console.error(
-      "Failed to retrieve a maintenance requested Date By Mnt_Request_id",
-      error
-    );
-    return res.status(500).json({
-      message:
-        "Failed to retrieve maintenance requested Date By Mnt_Request_id",
-    });
-  }
-}
-
 module.exports = {
   add_Maintenance_Request,
   get_All_Maintenance_Requests,
@@ -246,5 +218,4 @@ module.exports = {
   update_Maintenance_Request,
   delete_Maintenance_Request,
   update_Maintenance_Request_Status,
-  get_A_Maintenance_RequestDate,
 };

@@ -1,49 +1,58 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+// POST Function
+
 async function add_Internal_Mnt_Request(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
     const {
-      maintenanceType,
-      serviceProvider,
-      mobileNo,
-      completedDate,
-      paymentStatus,
-      paymentID,
+      Maintenance,
+      ServiceProvider,
+      MobileNo,
+      completed_date,
+      Payment_Status,
+      Internal_Mnt_Payment_id,
+      Description,
     } = req.body;
 
     console.log(
-      maintenanceType,
-      serviceProvider,
-      mobileNo,
-      completedDate,
-      paymentStatus,
-      paymentID
+      Maintenance,
+      ServiceProvider,
+      MobileNo,
+      completed_date,
+      Payment_Status,
+      Internal_Mnt_Payment_id,
+      Description
     );
     const add =
-      "INSERT INTO Internal_Mnt_Requests (Maintenance,ServiceProvider,MobileNo,Requested_date,completed_date,Payment_Status,Internal_Mnt_Payment_id) VALUES (?,?,?,CURRENT_TIMESTAMP,?,?,?)";
+      "INSERT INTO Internal_Mnt_Requests (Maintenance, ServiceProvider, MobileNo, completed_date, Payment_Status, Internal_Mnt_Payment_id, Description) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     try {
       await connection.query(add, [
-        maintenanceType,
-        serviceProvider,
-        mobileNo,
-        completedDate,
-        paymentStatus,
-        paymentID,
+        Maintenance,
+        ServiceProvider,
+        MobileNo,
+        completed_date,
+        Payment_Status,
+        Internal_Mnt_Payment_id,
+        Description,
       ]);
       return res
         .status(200)
-        .json({ message: "Internal_Mnt_Request Successfully Added" });
+        .json({ message: "Internal Maintenance Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      return res.status(201).json({
+        message: "Oops! There was an issue Adding Internal Maintenance Details",
+      });
     }
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res.status(201).json({
+      message: "Oops! There was an issue Adding Internal Maintenance Details",
+    });
   }
 }
 
@@ -91,50 +100,55 @@ async function update_Internal_Mnt_Request(req, res) {
     const connection = await mysql.createConnection(dbConfig);
 
     const {
-      maintenanceType,
-      serviceProvider,
-      mobileNo,
-      completedDate,
-      paymentStatus,
-      paymentID,
+      Maintenance,
+      ServiceProvider,
+      MobileNo,
+      completed_date,
+      Payment_Status,
+      Internal_Mnt_Payment_id,
+      Description,
     } = req.body;
 
     const id = req.params.id;
 
     console.log(
-      maintenanceType,
-      serviceProvider,
-      mobileNo,
-      completedDate,
-      paymentStatus,
-      paymentID
+      Maintenance,
+      ServiceProvider,
+      MobileNo,
+      completed_date,
+      Payment_Status,
+      Internal_Mnt_Payment_id,
+      Description
     );
 
     const query =
-      "UPDATE Internal_Mnt_Requests SET Maintenance = ?, ServiceProvider = ?, MobileNo = ?,requested_date = CURRENT_TIMESTAMP,completed_date = ? ,Payment_Status = ?, Internal_Mnt_Payment_id=? WHERE Internal_Mnt_Request_id = ?";
+      "UPDATE Internal_Mnt_Requests SET Maintenance = ?, ServiceProvider = ?, MobileNo = ?,completed_date = ? ,Payment_Status = ?, Internal_Mnt_Payment_id=?, Description=? WHERE Internal_Mnt_Request_id = ?";
 
     try {
       await connection.query(query, [
-        maintenanceType,
-        serviceProvider,
-        mobileNo,
-        completedDate,
-        paymentStatus,
-        paymentID,
+        Maintenance,
+        ServiceProvider,
+        MobileNo,
+        completed_date,
+        Payment_Status,
+        Internal_Mnt_Payment_id,
+        Description,
         id,
       ]);
       return res
         .status(200)
-        .json({ message: "Internal maintenance request Successfully Updated" });
+        .json({
+          message: "Internal Maintenance Details Successfully Updated!",
+        });
     } catch (error) {
       console.error("Failed to save data", error);
       return res.status(201).json({ message: "Process Failed" });
     }
   } catch (error) {
-    console.error("Failed to retrieve Internal maintenance ", error);
+    console.error("Failed to retrieve Internal Maintenance ", error);
     return res
       .status(500)
-      .json({ message: "Failed to update Internal maintenance" });
+      .json({ message: "Failed to Update Internal Maintenance" });
   }
 }
 
@@ -153,10 +167,10 @@ async function delete_Internal_Mnt_Request(req, res) {
       return res.status(201).json({ message: "Process Failed" });
     }
   } catch (error) {
-    console.error("Failed to retrieve Internal maintenance Request", error);
+    console.error("Failed to retrieve Internal Maintenance Request", error);
     return res
       .status(500)
-      .json({ message: "Failed to update Internal maintenance Request" });
+      .json({ message: "Failed to update Internal Maintenance Request" });
   }
 }
 module.exports = {

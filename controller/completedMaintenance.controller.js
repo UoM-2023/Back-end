@@ -61,7 +61,17 @@ async function get_All_Completed_Mnt_Request(req, res) {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Completed_MRequests ORDER BY completed_date DESC`;
+    // const query = `SELECT * FROM Completed_MRequests ORDER BY completed_date DESC`;
+    const query = ` SELECT 
+                      Completed_MRequests.*,
+                      Maintenance_Requests.requested_date
+                    FROM 
+                      Completed_MRequests
+                    JOIN 
+                      Maintenance_Requests
+                    ON 
+                      Completed_MRequests.Mnt_id = Maintenance_Requests.Mnt_Request_id
+                    ORDER BY completed_date DESC`;
 
     const [result] = await connection.query(query);
     console.log(result);
