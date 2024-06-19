@@ -62,7 +62,7 @@ async function get_All_Internal_Mnt_Requests(req, res) {
 
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Internal_Mnt_Requests`;
+    const query = `SELECT * FROM Internal_Mnt_Requests ORDER BY completed_date DESC`;
 
     const [result] = await connection.query(query);
     console.log(result);
@@ -75,6 +75,8 @@ async function get_All_Internal_Mnt_Requests(req, res) {
   }
 }
 
+// Get By Id Function
+
 async function get_A_Internal_Mnt_Request(req, res) {
   try {
     console.log("Called with id");
@@ -84,7 +86,7 @@ async function get_A_Internal_Mnt_Request(req, res) {
     const query = `SELECT * FROM Internal_Mnt_Requests WHERE id = ?`;
     const id = req.params.id;
 
-    const result = await connection.query(query, [id]);
+    const [result] = await connection.query(query, [id]);
     console.log(result);
     return res.status(200).json({ result: result });
   } catch (error) {
@@ -122,7 +124,7 @@ async function update_Internal_Mnt_Request(req, res) {
     );
 
     const query =
-      "UPDATE Internal_Mnt_Requests SET Maintenance = ?, ServiceProvider = ?, MobileNo = ?,completed_date = ? ,Payment_Status = ?, Internal_Mnt_Payment_id=?, Description=? WHERE Internal_Mnt_Request_id = ?";
+      "UPDATE Internal_Mnt_Requests SET Maintenance = ?, ServiceProvider = ?, MobileNo = ?,completed_date = ? ,Payment_Status = ?, Internal_Mnt_Payment_id=?, Description=? WHERE id = ?";
 
     try {
       await connection.query(query, [
@@ -135,11 +137,9 @@ async function update_Internal_Mnt_Request(req, res) {
         Description,
         id,
       ]);
-      return res
-        .status(200)
-        .json({
-          message: "Internal Maintenance Details Successfully Updated!",
-        });
+      return res.status(200).json({
+        message: "Internal Maintenance Details Successfully Updated!",
+      });
     } catch (error) {
       console.error("Failed to save data", error);
       return res.status(201).json({ message: "Process Failed" });
