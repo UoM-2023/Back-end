@@ -1,3 +1,4 @@
+const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -17,6 +18,7 @@ const staffdetailsRoute = require("./routes/staffdetails.route");
 const GuestDetailsRoute = require ("./routes/guest.route");
 const ReservationsRoute = require("./routes/reservation.route");
 const FacilityRoute = require("./routes/facility.route");
+const { socketIo } = require('./socket');
 
 
 // Configurations
@@ -49,7 +51,10 @@ app.use("/GuestDetail",GuestDetailsRoute);
 app.use("/Reservation",ReservationsRoute);
 app.use("/Facility",FacilityRoute)
 
-
+const server = http.createServer(app);
+socketIo.init(server);
 app.listen(PORT, () => {
+
+  
   console.log(`Server running on port ${PORT}`);
 });

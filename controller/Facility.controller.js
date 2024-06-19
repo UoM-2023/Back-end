@@ -10,10 +10,11 @@ async function facilityReserve(req, res) {
         const {
             facility_name,
             amount_charge,
-            charge_per
+            charge_per,
+            availability
         } = req.body;
 
-        console.log(facility_name, amount_charge, charge_per);
+        console.log(facility_name, amount_charge, charge_per,availability);
 
         const add = 'INSERT INTO Facilities (facility_name, amount_charge, charge_per, availability) VALUES (?, ?, ?, ?)';
 
@@ -41,7 +42,7 @@ async function getAllfacilityReserve(req, res) {
 
         const query = `SELECT * FROM Facilities`;
 
-        const result = await connection.query(query);
+        const [result] = await connection.query(query);
         console.log(result); 
 
         

@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
+const { socketIo } = require('../socket');
 
 
 //add reservations
@@ -25,6 +26,13 @@ async function addReservation (req,res) {
        
         try {
             await connection.query(add, [facility_name, resident_name, start_date, end_date, payment_status,availability ]);
+
+
+            ////socket
+           socketIo.ReservationCount('new reservation')
+            console.log("Reservation ")
+
+
             return res.status(200).json({message: 'Reservation Successfully Added'});
 
         } catch (error) {
@@ -52,8 +60,8 @@ async function getAllReservations(req,res){
         
         const query = `SELECT * FROM Reservations`;
 
-        const result = await connection.query(query);
-        console.log(result);
+        const [result] = await connection.query(query);
+        // console.log(result);
         return res.status(200).json({result : result});
 
     } catch(error){

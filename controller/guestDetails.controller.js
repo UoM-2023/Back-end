@@ -10,7 +10,6 @@ async function addGuestDetails(req, res) {
         const connection = await mysql.createConnection(dbConfig);
 
         const {
-            guest_ID,
             unit_ID,
             resident_name,
             guest_name,
@@ -20,23 +19,27 @@ async function addGuestDetails(req, res) {
             check_Out
         } = req.body;
 
-        console.log(guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
+        console.log( unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
 
-        const add = 'INSERT INTO Guest_Details (guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
+        const add = 'INSERT INTO Guest_Details (unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
 
         try {
-            await connection.query(add, [guest_ID,unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out]); 
-            return res.status(200).json({ message: 'Guest Successfully Added' });
+            await connection.query(add, [unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out]);
+            await connection.end(); // Close the connection
+            return res.status(200).json({ message: 'Guest Successfully Added!' });
         } catch (error) {
             console.error('Failed to save data', error);
-            return res.status(201).json({ message: 'Process Failed' });
+            await connection.end(); // Close the connection even on error
+            return res.status(500).json({ message: 'Process Failed' });
         }
 
     } catch (error) {
         console.error('Failed to connect to database', error);
-        return res.status(201).json({ message: 'Process Failed' });
+        return res.status(500).json({ message: 'Process Failed' });
     }
 }
+
+module.exports = addGuestDetails; // Ensure you export the function
 
 
 
