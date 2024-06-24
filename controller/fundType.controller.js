@@ -1,6 +1,7 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+
 async function addNewFund(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
@@ -24,10 +25,12 @@ async function addNewFund(req, res) {
     } catch (error) {
       console.error("Failed to save data", error);
       return res.status(201).json({ message: "Process Failed" });
-    }
+    } 
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    await connection.end();
   }
 }
 
@@ -45,6 +48,8 @@ async function getAllFunds(req, res) {
   } catch (error) {
     console.error("Failed to retrieve funds", error);
     return res.status(500).json({ message: "Failed to retrieve funds" });
+  } finally {
+    await connection.end()
   }
 }
 
@@ -63,6 +68,8 @@ async function getAFund(req, res) {
   } catch (error) {
     console.error("Failed to retrieve fund", error);
     return res.status(500).json({ message: "Failed to retrieve fund" });
+  } finally {
+    await connection.end();
   }
 }
 
@@ -96,6 +103,8 @@ async function updateFund(req, res) {
   } catch (error) {
     console.error("Failed to retrieve fund", error);
     return res.status(500).json({ message: "Failed to update fund" });
+  } finally {
+    await connection.end();
   }
 }
 

@@ -82,7 +82,7 @@ async function login(req,res){
                 secure: true,
                 maxAge: 2 * 24 * 60 * 60 * 1000
             });
-            return res.json({ token: accessToken, refeshToken: refreshToken });
+            return res.json({ token: accessToken, refreshToken: refreshToken, userId : userID });
 
         } else {
             return res.status(401).json({message:'Invalid Password'});
@@ -117,7 +117,7 @@ async function refresh(req,res){
 
                 // Set access token as a cookie in the response
                 res.cookie('token', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 2 * 60 * 1000 });
-                return res.status(200).json({ token: accessToken });
+                return res.status(200).json({ token: accessToken, userId : decoded.user });
             }
         });
 
