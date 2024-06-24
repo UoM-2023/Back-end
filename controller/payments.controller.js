@@ -1,65 +1,70 @@
-const sql = require("mssql");
-const dbConfig = require("../config/db.config");
+const mysql = require('mysql2/promise')
+const dbConfig = require('../config/db.config');
 
-async function addNewPayment(req, res) {
-  try {
-    await sql.connect(dbConfig);
+async function addNewPayment (req,res) {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
 
-    const request = new sql.Request();
+        const { user_id, unit_id, charge_type, method, amount, payment_id } = req.body;
 
-    const {
-      payment_id,
-      unit_id,
-      resident_name,
-      method,
-      chargeType,
-      paymentDate,
-      amount,
-    } = req.body;
+        console.log("Recieved: ",charge_type,amount);
 
-    console.log(
-      payment_id,
-      unit_id,
-      resident_name,
-      method,
-      chargeType,
-      paymentDate,
-      amount
-    );
-    const insertQuery = `INSERT INTO Payments (payment_id, unit_id, resident_name, method, chargeType, paymentDate, amount) VALUES (@payment_id, @unit_id, @resident_name, @method, @chargeType, @paymentDate, @amount)`;
+        const query = 'INSERT INTO recieved_payments (payment_id, unit_id, method, charge_type, payment_date, amount) VALUES (?, ?, ?, ?,CURRENT_TIMESTAMP, ?)';
+        
+        await connection.query(query,[payment_id,unit_id,method,charge_type,amount]);
 
-    request.input("payment_id", sql.VarChar, payment_id);
-    request.input("unit_id", sql.VarChar, unit_id);
-    request.input("resident_name", sql.VarChar, resident_name);
-    request.input("method", sql.VarChar, method);
-    request.input("chargeType", sql.VarChar, chargeType);
-    request.input("paymentDate", sql.Date, paymentDate);
-    request.input("amount", sql.Float, amount);
-    await request.query(insertQuery);
+        // Handling the recieved payments
+        let newManagementBalance = 0 
+        let newSinkingBalance = 0 
+        let newUtilityBlanace = 0
+        const [balance] = await connection.query('SELECT * FROM balance WHERE unit_id = ?',[unit_id]);
+        switch (charge_type) {
+            case 'Management':
+                newManagementBalance = balance[0].management_balance - amount;
+                break;
+            
+            case 'Sinking':
+                newSinkingBalance = balance[0].sinking_balance - amount
+                break;
 
-    return res
-      .status(200)
-      .json({ message: "Revenue Details Successfully Added" });
-  } catch (error) {
-    console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
-  }
+            case 'Utility':
+                newUtilityBlanace = balance[0].sinking_balance - amount
+                break;
+            
+            case 'All':
+                newManagementBalance = 0
+                newSinkingBalance = 0
+                newUtilityBlanace = 0
+                break;    
+        
+            default:
+                console.log("Process Failed")
+                break;
+        }
+        
+        await connection.query('UPDATE balance SET utility_balance = ?, sinking_balance = ?, management_balance = ? WHERE unit_id = ?',[newUtilityBlanace, newSinkingBalance, newManagementBalance, unit_id]);
+        return res.status(200).json({ message: "Balance Successfully Updated" });
+
+
+    } catch (error) {
+        console.error('Failed to save data',error);
+        return res.status(201).json({message:'Process Failed'});
+    } 
 }
 
-async function getAllPayments(req, res) {
-  try {
-    await sql.connect(dbConfig);
+async function getAllPayments(req,res){
+    try{
+        const connection = await mysql.createConnection(dbConfig);
 
-    const request = new sql.Request();
+        const query = 'SELECT * FROM recieved_payments';
 
-    const query = `SELECT * FROM Payments`;
+        const result = await connection.query(query);
 
-    const result = await request.query(query);
+        return res.status(200).json({ result: result });
 
-    return res.status(200).json({ result: result.recordset });
-  } catch (error) {
-    console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
-  }
+    } catch(error){
+        console.error('Failed to retrieve data',error);
+        return res.status(201).json({message:'Process Failed'});
+    }
 }
 module.exports = { addNewPayment, getAllPayments };

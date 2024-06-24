@@ -2,11 +2,11 @@ const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 const io = require('../index')
 
-
+let connection;
 
 async function addUtilityCharge (req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         
         const {
             unit_id,
@@ -75,7 +75,9 @@ async function addUtilityCharge (req,res){
         console.error('Failed to save data',error);
         return res.status(201).json({message:'Process Failed'});
     
-    } 
+    } finally {
+        await connection.end();
+    }
 }
 
 // Function that calculate utility cost according to the utility name
@@ -107,7 +109,7 @@ async function calculateUtilityCost(utilityType, numOfUnits){
 
 async function getUtilityCharges (req,res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT 
             muc.unit_id,
@@ -140,6 +142,6 @@ async function getUtilityCharges (req,res) {
     } catch (error) {
         console.error('Failed to retrieve data',error);
         return res.status(201).json({message:'Process Failed'});
-    }
+    } 
 }
 module.exports = { addUtilityCharge, getUtilityCharges }
