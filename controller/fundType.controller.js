@@ -1,6 +1,7 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+// POST Function
 
 async function addNewFund(req, res) {
   try {
@@ -21,18 +22,22 @@ async function addNewFund(req, res) {
         timePeriod,
         modifiedBy,
       ]);
-      return res.status(200).json({ message: "Fund Successfully Added" });
+      return res.status(200).json({ message: "New Fund Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
-    } 
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue Adding New Fund Details" });
+    }
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
-  } finally {
-    await connection.end();
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Adding New Fund Details" });
   }
 }
+
+// GET all Function
 
 async function getAllFunds(req, res) {
   try {
@@ -53,6 +58,8 @@ async function getAllFunds(req, res) {
   }
 }
 
+// Get By Id Function
+
 async function getAFund(req, res) {
   try {
     console.log("Called with id");
@@ -72,6 +79,37 @@ async function getAFund(req, res) {
     await connection.end();
   }
 }
+
+// DELETE Function
+
+async function deleteFund(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const id = req.params.fund_id;
+
+    const query = "DELETE FROM fundTypes WHERE fund_id = ?";
+
+    try {
+      await connection.query(query, [id]);
+      return res
+        .status(200)
+        .json({ message: "Fund Type Details Successfully Deleted!" });
+    } catch (error) {
+      console.error("Failed to delete Fund Type data", error);
+      return res
+        .status(500)
+        .json({ message: "Failed to Delete Fund Type details" });
+    }
+  } catch (error) {
+    console.error("Failed to connect to database", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to delete Fund Type details" });
+  }
+}
+
+// EDIT Function
 
 async function updateFund(req, res) {
   try {
@@ -95,17 +133,19 @@ async function updateFund(req, res) {
         modifiedBy,
         id,
       ]);
-      return res.status(200).json({ message: "Fund Successfully Updated" });
+      return res.status(200).json({ message: "Fund Successfully Updated!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Process Failed" });
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue Updating Fund Details" });
     }
   } catch (error) {
     console.error("Failed to retrieve fund", error);
-    return res.status(500).json({ message: "Failed to update fund" });
-  } finally {
-    await connection.end();
+    return res
+      .status(500)
+      .json({ message: "Oops! There was an issue Updating Fund Details" });
   }
 }
 
-module.exports = { addNewFund, getAllFunds, getAFund, updateFund };
+module.exports = { addNewFund, getAllFunds, getAFund, updateFund, deleteFund };

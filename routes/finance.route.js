@@ -14,13 +14,15 @@ const { getAUserCharge } = require('../controller/getAUserCharge.controller');
 const router = express.Router();
 
 // Post Requests
-router.post('/editFunds',newFund.addNewFund);
-router.post('/newExpense',newExpense.addNewExpense);
-router.post('/revenue',newRevenue.addNewRevenue);
-router.post('/payment',newPayment.addNewPayment);
-router.post('/utilityDetails', addNewUtility);
-router.post('/addUtilityUsage', addUtilityCharge);
-router.post('/getUtilityCharges', getUtilityCharges);
+router.get("/expenses", newExpense.getAllExpenses);
+router.get("/expenses/updateExpenses/:id", newExpense.getAExpensesByID);
+router.post("/editFunds", newFund.addNewFund);
+router.post("/newExpense", newExpense.addNewExpense);
+router.post("/revenue", newRevenue.addNewRevenue);
+router.post("/payment", newPayment.addNewPayment);
+router.post("/utilityDetails", addNewUtility);
+router.post("/addUtilityUsage", addUtilityCharge);
+router.post("/getUtilityCharges", getUtilityCharges);
 
 router.post('/notify', (req, res) => {
   console.log('Payment Notification:', req.body);
@@ -41,9 +43,10 @@ router.get('/getAUserCharge/:id', getAUserCharge);
 
 
 // Put Requests
-router.put('/editFunds/:id', newFund.updateFund);
+router.put("/editFunds/updateFund/:id", newFund.updateFund);
+router.put("/expenses/updateExpenses/:id", newExpense.updateExpenses);
 
 // Delete Routes
-// router.delete('/editFunds/:id', newFund.deleteFund);
+router.delete("/editFunds/deleteFund/:fund_id", newFund.deleteFund);
 
 module.exports = router;

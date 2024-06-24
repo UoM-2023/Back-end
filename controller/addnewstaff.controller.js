@@ -2,6 +2,8 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 const { rows } = require("mssql");
 
+// POST Function
+
 async function addNewStaff(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
@@ -65,11 +67,15 @@ async function addNewStaff(req, res) {
         .json({ message: "New Staff Details Successfully Added!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Oops! There was an issue Adding Staff Details" });
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue Adding Staff Details" });
     }
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Oops! There was an issue Adding Staff Details" });
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Adding Staff Details" });
   }
 }
 
@@ -212,11 +218,15 @@ async function updateStaff(req, res) {
         .json({ message: "Staff Details Successfully Updated!" });
     } catch (error) {
       console.error("Failed to save data", error);
-      return res.status(201).json({ message: "Oops! There was an issue Updating Staff Details" });
+      return res
+        .status(201)
+        .json({ message: "Oops! There was an issue Updating Staff Details" });
     }
   } catch (error) {
     console.error("Failed to retrieve Staff Details", error);
-    return res.status(500).json({ message: "Oops! Failed to update Staff Details." });
+    return res
+      .status(500)
+      .json({ message: "Oops! Failed to update Staff Details." });
   }
 }
 

@@ -67,4 +67,4 @@ async function getAllPayments(req,res){
         return res.status(201).json({message:'Process Failed'});
     }
 }
-module.exports = {addNewPayment, getAllPayments};
+module.exports = { addNewPayment, getAllPayments };
