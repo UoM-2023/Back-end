@@ -101,7 +101,7 @@ async function getMaintenanceRequestsByUser(req, res) {
     }
 
     return res.status(200).json({ result: rows });
-  } catch (error) {
+  } catch (error) {       
     console.error("Failed to retrieve maintenance requests", error);
     return res.status(500).json({ message: "Failed to retrieve maintenance requests", error: error.message });
   }
