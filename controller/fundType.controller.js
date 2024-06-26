@@ -54,7 +54,7 @@ async function getAllFunds(req, res) {
     console.error("Failed to retrieve funds", error);
     return res.status(500).json({ message: "Failed to retrieve funds" });
   } finally {
-    await connection.end()
+    await connection.end();
   }
 }
 

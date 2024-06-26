@@ -1,15 +1,15 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
-async function retrieveUser(req,res){
-    try {
-        const connection = await mysql.createConnection(dbConfig);
+async function retrieveUser(req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
 
-        const user_id  = req.params.id;
+    const user_id = req.params.id;
 
-        console.log("UserID Called",user_id);
+    console.log("UserID Called", user_id);
 
-        const query = `SELECT 
+    const query = `SELECT 
             uc.UserName,
             uc.UnitID,
             uc.residentID,
@@ -28,16 +28,16 @@ async function retrieveUser(req,res){
         ON 
             uc.residentID = ri.residentID
         WHERE 
-            uc.UserName = ?`
-        
-        const [result] = await connection.query(query, [user_id]);
-        console.log(result);
+            uc.UserName = ?`;
 
-        return res.status(200).json({ result: result });
-    } catch (error) {
-        console.error("Failed to retieve data", error);
-        return res.status(201).json({ message: "Process Failed" })
-    }
+    const [result] = await connection.query(query, [user_id]);
+    console.log(result);
+
+    return res.status(200).json({ result: result });
+  } catch (error) {
+    console.error("Failed to retieve data", error);
+    return res.status(201).json({ message: "Process Failed" });
+  }
 }
 
 module.exports = { retrieveUser };
