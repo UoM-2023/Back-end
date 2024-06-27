@@ -1,5 +1,14 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const app = express();
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.use(express.json());
 
 
 async function addNewNotice(req, res) {
