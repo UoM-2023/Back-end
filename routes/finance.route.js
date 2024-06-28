@@ -7,6 +7,8 @@ const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../c
 const { addUtilityCharge, getUtilityCharges } = require('../controller/utilityCharges.controller');
 const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
 const { getAUserCharge } = require('../controller/getAUserCharge.controller');
+const { getAllBalance } = require('../controller/getAllBalance.controller');
+const { sendPaymentWarning } = require('../controller/sendPaymentWarning.controller');
 
 
 
@@ -29,17 +31,20 @@ router.post('/notify', (req, res) => {
   res.send('Payment notification received');
 });
 
+router.post('/sendPaymentWarning', sendPaymentWarning);
+
 // Get Requests
 router.get('/editFunds', verifyToken, checkRole(['finance_manager','admin']), newFund.getAllFunds);
 router.get('/newExpense', verifyToken, checkRole(['finance_manager','admin']), newExpense.getAllExpenses);
 router.get('/revenue',newRevenue.getAllRevenues);
-router.get('/payment',newPayment.getAllPayments);
+// router.get('/payment',newPayment.getAllPayments);
 router.get('/editFunds/:id', newFund.getAFund);
 router.get('/utilityDetails', getUtitlityDetails);
 router.get('/utilityDetails/:id', getOneUtilityDetail);
 router.get('/getUtilityCharges', getUtilityCharges);
 router.get('/getAUserCharge/:id', getAUserCharge);
-
+router.get('/getAllPayments', verifyToken,newPayment.getAllPayments);
+router.get('/getAllBalance',getAllBalance);
 
 
 // Put Requests

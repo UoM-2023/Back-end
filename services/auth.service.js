@@ -143,57 +143,56 @@ async function refresh(req, res) {
 }
 
 async function login(req, res) {
-
-    try {
-      const { userID, password } = req.body;
-      console.log(userID);
+  try {
+    const { userID, password } = req.body;
+    console.log(userID);
       // Check user is exists with "getUserByID" function in database.js
-      const user = await getUserByID(userID);
+    const user = await getUserByID(userID);
   
-      if (user == null) {
-        return res.status(401).json({ message: "Invalid username" });
-      }
+    if (user == null) {
+       return res.status(401).json({ message: "Invalid username" });
+    }
       // If User name is correct compare password with the entered password
-      const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
-      if (checkValidPassword) {
-        user.Password = undefined;
+    const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
+    if (checkValidPassword) {
+      user.Password = undefined;
         //Creating token
-        const accessToken = jwt.sign(
-          {
-            userId: user.userID,
-            role: user.role,
-          },
-          process.env.SECRET_KEY,
-          {
-            expiresIn: "30m",
-          }
-        );
-        res.cookie("token", accessToken, {
-          httpOnly: true,
-          sameSite: "None",
-          secure: true,
-          maxAge: 30 * 60 * 1000,
-        });
+      const accessToken = jwt.sign(
+        {
+          userId: user.userID,
+          role: user.role,
+        },
+        process.env.SECRET_KEY,
+        {
+          expiresIn: "30m",
+        }
+      );
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+        maxAge: 30 * 60 * 1000,
+      });
   
               // Refresh Token
-              const refreshToken = jwt.sign({
-                  user: user.userID
-              },process.env.REFRESH_TOKEN_SECRET, { 
-                  expiresIn: '2d'
-              });
-              res.cookie('refresh_token', refreshToken, {
-                  httpOnly: true,
-                  sameSite: 'None', 
-                  secure: true,
-                  maxAge: 2 * 24 * 60 * 60 * 1000
-              });
-              return res.json({ token: accessToken, refreshToken: refreshToken, userId : userID });
-            }
-          }
-     catch (error) {
-      console.error("Database operation failed", err);
-      return res.status(201).json({ message: "Server Error" })
+      const refreshToken = jwt.sign({
+          user: user.userID
+      },process.env.REFRESH_TOKEN_SECRET, { 
+          expiresIn: '2d'
+      });
+      res.cookie('refresh_token', refreshToken, {
+           httpOnly: true,
+          sameSite: 'None', 
+          secure: true,
+          maxAge: 2 * 24 * 60 * 60 * 1000
+      });
+      return res.json({ token: accessToken, refreshToken: refreshToken, userId : userID });
     }
+  }
+    catch (error) {
+    console.error("Database operation failed", err);
+    return res.status(201).json({ message: "Server Error" })
+  }
 }
       
     

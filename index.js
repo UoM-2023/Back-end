@@ -8,6 +8,7 @@ const config = require("./config/db.config");
 const database = require("./database/database");
 const http = require("http");
 const socketIo = require("socket.io");
+const socketManager = require("./sockets/socketManager");
 
 // Imported Routes
 
@@ -25,11 +26,13 @@ const testRoute = require("./routes/test.route");
 const app = express();
 const server = http.createServer(app);
 
-const io = socketIo(server, {
-  cors: {
-    origin: "*",
-  },
-});
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+//   },
+// });
 
 const PORT = process.env.PORT || 3001;
 
@@ -37,7 +40,8 @@ dotenv.config();
 app.use(express.json());
 app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"], credentials: true }));
 app.use(cookieParser());
 
 // Check database with dummy connections
@@ -47,6 +51,8 @@ async function runScripts() {
 }
 
 runScripts();
+
+socketManager.initializeSocket(server);
 
 // Api Routes
 app.use("/", apiRoutes);
@@ -60,20 +66,32 @@ app.use("/testing", testRoute);
 app.use("/maintenance", maintenanceRoute);
 
 // Socket connection
-io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
+// const users = {};
 
-  // Join room based on userId
-  socket.on("joinRoom", (userId) => {
-    socket.join(userId);
-    console.log(`Socket ${socket.id} joined room ${userId}`);
-  });
+// io.on("connection", (socket) => {
+//   console.log("Client connected:", socket.id);
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-  });
-});
+//   // Join room based on userId
+//   socket.on("joinRoom", (userId) => {
+//     users[userId] = socket.id;
+//     socket.join(userId);
+//     console.log("UserID: ",users[userId])
+//     console.log(`Socket ${socket.id} joined room ${userId}`);
+//   });
+
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected:", socket.id);
+//     for (let userId in users) {
+//       if (users[userId] === socket.id) {
+//         delete users[userId];
+//         break;
+//       }
+//     }
+//   });
+// });
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// module.exports = { io, users }

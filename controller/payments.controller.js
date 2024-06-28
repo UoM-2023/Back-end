@@ -28,7 +28,7 @@ async function addNewPayment (req,res) {
                 break;
 
             case 'Utility':
-                newUtilityBlanace = balance[0].sinking_balance - amount
+                newUtilityBlanace = balance[0].utility_balance - amount
                 break;
             
             case 'All':
@@ -56,7 +56,7 @@ async function getAllPayments(req,res){
     try{
         const connection = await mysql.createConnection(dbConfig);
 
-        const query = 'SELECT * FROM recieved_payments';
+        const query = 'SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID';
 
         const result = await connection.query(query);
 
