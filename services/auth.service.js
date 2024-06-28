@@ -44,6 +44,7 @@ async function login(req, res) {
   try {
     const { userID, password } = req.body;
     console.log(userID);
+
     // Check user is exists with "getUserByID" function in database.js
     const user = await getUserByID(userID);
 
@@ -88,7 +89,11 @@ async function login(req, res) {
         secure: true,
         maxAge: 2 * 24 * 60 * 60 * 1000,
       });
-      return res.json({ token: accessToken, refeshToken: refreshToken });
+      return res.json({
+        token: accessToken,
+        refeshToken: refreshToken,
+        LoggedUserId: userID,
+      });
     } else {
       return res.status(401).json({ message: "Invalid Password" });
     }

@@ -3,7 +3,7 @@ const Settings = require("../controller/settings.controller");
 
 const router = express.Router();
 
-// router.get("/updatePassword/:UserID", Settings.getUserById);
+router.get("/getUser/:UserID", Settings.getUserByuserID);
 router.put("/updateUserCredentials/:UserID", Settings.updatePassword);
 
 module.exports = router;
