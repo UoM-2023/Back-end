@@ -18,7 +18,7 @@ const staffdetailsRoute = require("./routes/staffdetails.route");
 const GuestDetailsRoute = require ("./routes/guest.route");
 const ReservationsRoute = require("./routes/reservation.route");
 const FacilityRoute = require("./routes/facility.route");
-const { socketIo } = require('./socket');
+
 
 
 // Configurations
@@ -51,8 +51,7 @@ app.use("/GuestDetail",GuestDetailsRoute);
 app.use("/Reservation",ReservationsRoute);
 app.use("/Facility",FacilityRoute)
 
-const server = http.createServer(app);
-socketIo.init(server);
+
 app.listen(PORT, () => {
 
   
