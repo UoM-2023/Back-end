@@ -24,6 +24,7 @@ const residentsdetailsRoute = require("./routes/residentsdetails.route");
 const staffdetailsRoute = require("./routes/staffdetails.route");
 const userCredentialsRoute = require("./routes/usercredentials.route");
 const testRoute = require("./routes/test.route");
+const settingsRoute = require("./routes/settings.route");
 
 // Configurations
 const app = express();
@@ -67,6 +68,7 @@ app.use("/staffDetails", staffdetailsRoute);
 app.use("/userCredentials", userCredentialsRoute);
 app.use("/testing", testRoute);
 app.use("/maintenance", maintenanceRoute);
+app.use("/Settings", settingsRoute);
 
 // Socket connection
 // const users = {};

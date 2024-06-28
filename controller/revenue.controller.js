@@ -9,7 +9,7 @@ async function addNewRevenue(req, res) {
     const { paid_by, amount, rType, payment_method, staff_id } = req.body;
 
     console.log(paid_by, amount, rType, payment_method, staff_id);
-    
+
     const add = `INSERT INTO revenue (paid_by, amount, rType, payment_method, staff_id, added_date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`;
 
     try {
@@ -41,9 +41,9 @@ async function getAllRevenues(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM revenue`;
+    const query = `SELECT * FROM revenue ORDER BY added_date DESC`;
 
-    const result = await connection.query(query);
+    const [result] = await connection.query(query);
 
     return res.status(200).json({ result: result });
   } catch (error) {
