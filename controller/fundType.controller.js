@@ -2,10 +2,11 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
+let connection;
 
 async function addNewFund(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { fundName, chargedBy, amount, timePeriod, modifiedBy } = req.body;
 
@@ -28,12 +29,16 @@ async function addNewFund(req, res) {
       return res
         .status(201)
         .json({ message: "Oops! There was an issue Adding New Fund Details" });
-    }
+    } 
   } catch (error) {
     console.error("Failed to save data", error);
     return res
       .status(201)
       .json({ message: "Oops! There was an issue Adding New Fund Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -43,7 +48,7 @@ async function getAllFunds(req, res) {
   try {
     console.log("called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM fundTypes`;
 
@@ -53,6 +58,10 @@ async function getAllFunds(req, res) {
   } catch (error) {
     console.error("Failed to retrieve funds", error);
     return res.status(500).json({ message: "Failed to retrieve funds" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -62,7 +71,7 @@ async function getAFund(req, res) {
   try {
     console.log("Called with id");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM fundTypes WHERE fund_id = ?`;
     const id = req.params.id;
@@ -73,6 +82,10 @@ async function getAFund(req, res) {
   } catch (error) {
     console.error("Failed to retrieve fund", error);
     return res.status(500).json({ message: "Failed to retrieve fund" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -80,7 +93,7 @@ async function getAFund(req, res) {
 
 async function deleteFund(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const id = req.params.fund_id;
 
@@ -102,6 +115,10 @@ async function deleteFund(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to delete Fund Type details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -109,7 +126,7 @@ async function deleteFund(req, res) {
 
 async function updateFund(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { fundName, chargedBy, amount, timePeriod, modifiedBy } = req.body;
 
@@ -141,6 +158,10 @@ async function updateFund(req, res) {
     return res
       .status(500)
       .json({ message: "Oops! There was an issue Updating Fund Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

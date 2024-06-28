@@ -5,8 +5,9 @@ const { rows } = require("mssql");
 // POST Function
 
 async function usercredentials(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { UserID, userRole, userPassword, Confirmpassword } = req.body;
     const added_time = req.body.added_time || new Date();
@@ -36,16 +37,21 @@ async function usercredentials(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 // GET Function
 
 async function getAllUserCredentials(req, res) {
+  let connection;
   try {
     console.log("User Credentials Get func Called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM UserCredentials`;
 
@@ -61,12 +67,17 @@ async function getAllUserCredentials(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve User Credentials Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 // Get By Id Function
 
 async function getAllUserCredentialsById(req, res) {
+  let connection;
   try {
     console.log("Called with User ID");
 
@@ -83,14 +94,19 @@ async function getAllUserCredentialsById(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve User Credentials Details " });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 // DELETE Function
 
 async function deleteUserCredentials(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const id = req.params.UserID;
 
@@ -112,14 +128,19 @@ async function deleteUserCredentials(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to delete User Credentials" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 // EDIT Function
 
 async function updateUserCredentials(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { userRole, userPassword, added_time } = req.body;
 
@@ -144,6 +165,10 @@ async function updateUserCredentials(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to update User Credentials Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
