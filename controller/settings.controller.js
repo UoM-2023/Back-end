@@ -179,14 +179,6 @@ async function updatePassword(req, res) {
       "SELECT userPassword FROM User_Credentials WHERE UserID = ?";
     const [results] = await connection.query(checkPasswordQuery, [UserID]);
 
-    // const user = results[0];
-
-    // const hashedPassword = await bcrypt.hash(userPassword, 10);
-
-    // if (results.length === 0 || results[0].password !== oldPassword) {
-    //  return res.status(400).json({ message: "Old password is incorrect" });
-    // }
-
     if (results.length === 0) {
       await connection.end();
       return res.status(404).send({ message: "User not found" });
@@ -198,7 +190,7 @@ async function updatePassword(req, res) {
     const isMatch = await bcrypt.compare(oldPassword, user.userPassword);
     if (!isMatch) {
       await connection.end();
-      return res.status(400).send({ message: "Old password is incorrect" });
+      return res.status(201).json({ message: "Old password is incorrect" });
     }
 
     const hashedPassword = await bcrypt.hash(userPassword, 8);
@@ -217,25 +209,25 @@ async function updatePassword(req, res) {
 
 // Get By Id Function (UserID)
 
-async function getUserByuserID(req, res) {
-  try {
-    console.log("Called with UserID");
+// async function getUserByuserID(req, res) {
+//   try {
+//     console.log("Called with UserID");
 
-    const connection = await mysql.createConnection(dbConfig);
+//     const connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM User_Credentials WHERE UserID = ?`;
-    const id = req.params.UserID;
+//     const query = `SELECT * FROM User_Credentials WHERE UserID = ?`;
+//     const id = req.params.UserID;
 
-    const [result] = await connection.query(query, [id]);
+//     const [result] = await connection.query(query, [id]);
 
-    console.log(result);
-    return res.status(200).json({ result: result });
-  } catch (error) {
-    console.error("Failed to retrieve User Details by UserID", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to retrieve User  Details by UserID" });
-  }
-}
+//     console.log(result);
+//     return res.status(200).json({ result: result });
+//   } catch (error) {
+//     console.error("Failed to retrieve User Details by UserID", error);
+//     return res
+//       .status(500)
+//       .json({ message: "Failed to retrieve User  Details by UserID" });
+//   }
+// }
 
-module.exports = { updatePassword, getUserByuserID };
+module.exports = { updatePassword };

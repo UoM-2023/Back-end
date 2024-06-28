@@ -53,7 +53,7 @@ async function getAllFunds(req, res) {
   } catch (error) {
     console.error("Failed to retrieve funds", error);
     return res.status(500).json({ message: "Failed to retrieve funds" });
-  } 
+  }
 }
 
 // Get By Id Function
@@ -73,7 +73,7 @@ async function getAFund(req, res) {
   } catch (error) {
     console.error("Failed to retrieve fund", error);
     return res.status(500).json({ message: "Failed to retrieve fund" });
-  } 
+  }
 }
 
 // DELETE Function
