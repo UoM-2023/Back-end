@@ -1,9 +1,20 @@
-const express=require('express');
-const addResidentialUnit=require('../controller/residentialUnits.controller');
+const express = require('express');
+const residentialUnits = require('../controller/residentialUnits.controller');
 
-const router=express.Router();
+const router = express.Router();
 
-console.log(addResidentialUnit);
-router.post('/residentialUnit',addResidentialUnit);
+//Post Request
+router.post('/addNewUnit',residentialUnits.addNewUnit);
+
+//Get Request
+router.get('/addNewUnit', residentialUnits.getAllUnits);
+router.get('/addNewUnit/:id', residentialUnits.getAUnit);
+
+//Put Request
+router.put('/addNewUnit/:id', residentialUnits.updateUnit);
+
+//Delete Request
+router.delete('/addNewUnit/:id', residentialUnits.deleteUnit);
 
 module.exports=router;
+
