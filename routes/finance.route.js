@@ -1,17 +1,21 @@
-const express = require('express');
-const newFund = require('../controller/fundType.controller');
-const newExpense = require('../controller/expenses.controller');
-const newRevenue  = require('../controller/revenue.controller');
-const newPayment  = require('../controller/payments.controller');
-const { addNewUtility, getUtitlityDetails, getOneUtilityDetail } = require('../controller/utilityDetails.controller');
-const { addUtilityCharge, getUtilityCharges } = require('../controller/utilityCharges.controller');
-const { verifyToken, checkRole } = require('../middlewares/auth.middleware');
-const { getAUserCharge } = require('../controller/getAUserCharge.controller');
+const express = require("express");
+const newFund = require("../controller/fundType.controller");
+const newExpense = require("../controller/expenses.controller");
+const newRevenue = require("../controller/revenue.controller");
+const newPayment = require("../controller/payments.controller");
+const {
+  addNewUtility,
+  getUtitlityDetails,
+  getOneUtilityDetail,
+} = require("../controller/utilityDetails.controller");
+const {
+  addUtilityCharge,
+  getUtilityCharges,
+} = require("../controller/utilityCharges.controller");
+const { verifyToken, checkRole } = require("../middlewares/auth.middleware");
+const { getAUserCharge } = require("../controller/getAUserCharge.controller");
 const { getAllBalance } = require('../controller/getAllBalance.controller');
 const { sendPaymentWarning } = require('../controller/sendPaymentWarning.controller');
-
-
-
 
 const router = express.Router();
 
@@ -26,9 +30,9 @@ router.post("/utilityDetails", addNewUtility);
 router.post("/addUtilityUsage", addUtilityCharge);
 router.post("/getUtilityCharges", getUtilityCharges);
 
-router.post('/notify', (req, res) => {
-  console.log('Payment Notification:', req.body);
-  res.send('Payment notification received');
+router.post("/notify", (req, res) => {
+  console.log("Payment Notification:", req.body);
+  res.send("Payment notification received");
 });
 
 router.post('/sendPaymentWarning', sendPaymentWarning);
