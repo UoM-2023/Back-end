@@ -1,8 +1,8 @@
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 try {
-    dotenv.config();
+  dotenv.config();
 } catch (error) {
-    console.error("Error loading .env file:", error.message);
+  console.error("Error loading .env file:", error.message);
 }
 
 // const server = process.env.AZURE_SQL_SERVER
@@ -11,15 +11,15 @@ try {
 // const user = process.env.AZURE_SQL_USER
 // const password = process.env.AZURE_SQL_PASSWORD
 
-const host = process.env.MYSQL_HOST
-const user = process.env.MYSQL_USER
-const password = process.env.MYSQL_PASSWORD
-const database = process.env.MYSQL_DATABASE
+const host = process.env.MYSQL_HOST;
+const user = process.env.MYSQL_USER;
+const password = process.env.MYSQL_PASSWORD;
+const database = process.env.MYSQL_DATABASE;
 
 const config = {
-    host,
-    user,
-    password,
-    database
-}
+  host,
+  user,
+  password,
+  database,
+};
 module.exports = config;

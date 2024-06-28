@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
+const { verifyToken, checkRole } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("Hello World!");
+router.get("/hello", verifyToken, checkRole(["admin"]), (req, res) => {
+  res.send("Hello World!");
 });
 
 module.exports = router;
-
