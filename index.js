@@ -7,7 +7,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const config = require("./config/db.config");
 const database = require("./database/database");
-const socketIo = require('socket.io');
 const mysql = require('mysql2/promise');
 const socketIo = require("socket.io");
 const socketManager = require("./sockets/socketManager");

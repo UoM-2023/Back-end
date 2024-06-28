@@ -11,16 +11,15 @@ async function addNewUnit(req, res) {
             Block_no,
             Building,
             Category,
-            Resident_name,
             RStatus
         } = req.body;
 
-        console.log(Unit_id, Block_no, Building, Category, Resident_name, RStatus);
+        console.log(Unit_id, Block_no, Building, Category, RStatus);
 
-        const addQuery = 'INSERT INTO ResidentialUnit (Unit_id,Block_no, Building, Category, Resident_name, RStatus) VALUES (?,?, ?, ?, ?, ?)'; 
+        const addQuery = 'INSERT INTO ResidentialUnit (Unit_id,Block_no, Building, Category, RStatus) VALUES (?,?, ?, ?, ?)'; 
 
         try {
-            const [result] = await connection.query(addQuery, [Unit_id, Block_no, Building, Category, Resident_name, RStatus]); // Ensure the order of parameters matches the query
+            const [result] = await connection.query(addQuery, [Unit_id, Block_no, Building, Category, RStatus]); // Ensure the order of parameters matches the query
             // Assuming Unit_id is auto-incremented, no need to include it in the query or parameters
             console.log("Inserted ID:", result.insertId); // Log the ID of the inserted row
             await connection.end(); // Close the connection after query execution
