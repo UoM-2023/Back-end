@@ -151,17 +151,17 @@ async function login(req, res) {
   try {
     const { userID, password } = req.body;
     console.log(userID);
-      // Check user is exists with "getUserByID" function in database.js
+    // Check user is exists with "getUserByID" function in database.js
     const user = await getUserByID(userID);
-  
+
     if (user == null) {
-       return res.status(401).json({ message: "Invalid username" });
+      return res.status(401).json({ message: "Invalid username" });
     }
-      // If User name is correct compare password with the entered password
+    // If User name is correct compare password with the entered password
     const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
     if (checkValidPassword) {
       user.Password = undefined;
-        //Creating token
+      //Creating token
       const accessToken = jwt.sign(
         {
           userId: user.userID,
@@ -178,25 +178,32 @@ async function login(req, res) {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-  
-              // Refresh Token
-      const refreshToken = jwt.sign({
-          user: user.userID
-      },process.env.REFRESH_TOKEN_SECRET, { 
-          expiresIn: '2d'
+
+      // Refresh Token
+      const refreshToken = jwt.sign(
+        {
+          user: user.userID,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+          expiresIn: "2d",
+        }
+      );
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+        maxAge: 2 * 24 * 60 * 60 * 1000,
       });
-      res.cookie('refresh_token', refreshToken, {
-           httpOnly: true,
-          sameSite: 'None', 
-          secure: true,
-          maxAge: 2 * 24 * 60 * 60 * 1000
+      return res.json({
+        token: accessToken,
+        refreshToken: refreshToken,
+        userId: userID,
       });
-      return res.json({ token: accessToken, refreshToken: refreshToken, userId : userID });
     }
-  }
-    catch (error) {
-    console.error("Database operation failed", err);
-    return res.status(201).json({ message: "Server Error" })
+  } catch (error) {
+    console.error("Database operation failed", error);
+    return res.status(201).json({ message: "Server Error" });
   }
 }
 
