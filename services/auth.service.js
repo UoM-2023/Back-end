@@ -202,7 +202,7 @@ async function login(req, res) {
       });
     }
   } catch (error) {
-    console.error("Database operation failed", err);
+    console.error("Database operation failed", error);
     return res.status(201).json({ message: "Server Error" });
   }
 }
