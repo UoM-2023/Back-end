@@ -4,6 +4,137 @@ const io = require("../index");
 
 let connection;
 
+// async function addUtilityCharge(req, res) {
+//   try {
+//     connection = await mysql.createConnection(dbConfig);
+
+//     const {
+//       unit_id,
+//       month,
+//       electricityUsage,
+//       waterUsage,
+//       gasUsage,
+//       staffID,
+//       remark,
+//     } = req.body;
+
+//     console.log(staffID);
+
+//     let totalCost = 0.0;
+//     let gasCost = 0.0;
+//     let waterCost = 0.0;
+//     let electricityCost = 0.0;
+
+//     waterCost += await calculateUtilityCost("Water", waterUsage);
+
+//     gasCost += await calculateUtilityCost("Gas", gasUsage);
+
+//         const [balance] = await connection.query('SELECT utility_balance FROM balance WHERE unit_id = ?',[unit_id]);
+//         let previousBalance = 0;
+//         if (balance.length>0) {
+//             previousBalance = balance[0].utility_balance;
+//         }
+//         console.log("Prev Balance: ",previousBalance);
+//         totalCost = gasCost + waterCost + electricityCost;
+//         const newBalance = totalCost + previousBalance;
+//         console.log("New Balance: ",newBalance);
+//         await connection.query('INSERT INTO balance (unit_id, utility_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE utility_balance = ?', [unit_id, newBalance, newBalance]);
+
+//         // Inserint to main utility table
+//         const [utilityResult] = await connection.query(`INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, 'AP0001F', CURRENT_TIMESTAMP)`,[unit_id, month, previousBalance, totalCost, newBalance, staffID])
+
+//         console.log(utilityResult);
+//         // Take the utility charge id and insert values of gas, water and electricity
+//         const utilityCharge_id = utilityResult.insertId;
+//         await connection.query('INSERT INTO gasUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, gasUsage, gasCost]);
+//         await connection.query('INSERT INTO waterUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, waterUsage, waterCost]);
+//         await connection.query('INSERT INTO elecUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)',[utilityCharge_id, unit_id, electricityUsage, electricityCost]);
+
+//     //     // Socket connection
+//     //     const [userResult] = await connection.query('SELECT UserName FROM Unit_Credentials WHERE UnitID = ?',[unit_id]);
+//     //     const userId = userResult[0].user_id;
+//     //     // Emit the update to the specific user's room
+//     //     io.to(userId).emit('utilityUpdate', {
+//     //         unit_id,
+//     //         month,
+//     //         previousBalance,
+//     //         totalCost,
+//     //         newBalance,
+//     //         gasUsage,
+//     //         gasCost,
+//     //         waterUsage,
+//     //         waterCost,
+//     //         electricityUsage,
+//     //         electricityCost
+//     //     });
+
+//     //     return res.status(200).json({ message: 'Utility details updated successfully.' });
+//     // } catch (error) {
+//     //     console.error('Failed to save data',error);
+//     //     return res.status(201).json({message:'Process Failed'});
+
+//     // } finally {
+//     //     await connection.end();
+//     // }
+//     totalCost = gasCost + waterCost + electricityCost;
+//     const newBalance = totalCost + previousBalance;
+
+//     await connection.query(
+//       "INSERT INTO balance (unit_id, utility_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE utility_balance = ?",
+//       [unit_id, newBalance, newBalance]
+//     );
+
+//     // Inserint to main utility table
+//     const [utilityResult] = await connection.query(
+//       "INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+//       [unit_id, month, previousBalance, totalCost, newBalance, staffID]
+//     );
+
+//     console.log(utilityResult);
+//     // Take the utility charge id and insert values of gas, water and electricity
+//     const utilityCharge_id = utilityResult.insertId;
+//     await connection.query(
+//       "INSERT INTO gasUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)",
+//       [utilityCharge_id, unit_id, gasUsage, gasCost]
+//     );
+//     await connection.query(
+//       "INSERT INTO waterUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)",
+//       [utilityCharge_id, unit_id, waterUsage, waterCost]
+//     );
+//     await connection.query(
+//       "INSERT INTO elecUsage (utilityCharge_id, unit_id, no_of_units, month_amount) VALUES (?, ?, ?, ?)",
+//       [utilityCharge_id, unit_id, electricityUsage, electricityCost]
+//     );
+
+//     // Socket connection
+//     // const [userResult] = await connection.query('SELECT UserName FROM Unit_Credentials WHERE UnitID = ?',[unit_id]);
+//     // const userId = userResult[0].user_id;
+//     // // Emit the update to the specific user's room
+//     // io.to(userId).emit('utilityUpdate', {
+//     //     unit_id,
+//     //     month,
+//     //     previousBalance,
+//     //     totalCost,
+//     //     newBalance,
+//     //     gasUsage,
+//     //     gasCost,
+//     //     waterUsage,
+//     //     waterCost,
+//     //     electricityUsage,
+//     //     electricityCost
+//     // });
+
+//     return res
+//       .status(200)
+//       .json({ message: "Utility details updated successfully." });
+//   } catch (error) {
+//     console.error("Failed to save data", error);
+//     return res.status(201).json({ message: "Process Failed" });
+//   }
+//   //  finally {
+//   //   await connection.end();
+//   // }
+
 async function addUtilityCharge(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
@@ -42,9 +173,10 @@ async function addUtilityCharge(req, res) {
     if (balance.length > 0) {
       previousBalance = balance[0].utility_balance;
     }
+    console.log("Prev Balance: ", previousBalance);
     totalCost = gasCost + waterCost + electricityCost;
     const newBalance = totalCost + previousBalance;
-
+    console.log("New Balance: ", newBalance);
     await connection.query(
       "INSERT INTO balance (unit_id, utility_balance) VALUES (?, ?) ON DUPLICATE KEY UPDATE utility_balance = ?",
       [unit_id, newBalance, newBalance]
@@ -52,7 +184,7 @@ async function addUtilityCharge(req, res) {
 
     // Inserint to main utility table
     const [utilityResult] = await connection.query(
-      "INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+      `INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, 'AP0001F', CURRENT_TIMESTAMP)`,
       [unit_id, month, previousBalance, totalCost, newBalance, staffID]
     );
 
@@ -73,22 +205,25 @@ async function addUtilityCharge(req, res) {
     );
 
     // Socket connection
-    // const [userResult] = await connection.query('SELECT UserName FROM Unit_Credentials WHERE UnitID = ?',[unit_id]);
-    // const userId = userResult[0].user_id;
-    // // Emit the update to the specific user's room
-    // io.to(userId).emit('utilityUpdate', {
-    //     unit_id,
-    //     month,
-    //     previousBalance,
-    //     totalCost,
-    //     newBalance,
-    //     gasUsage,
-    //     gasCost,
-    //     waterUsage,
-    //     waterCost,
-    //     electricityUsage,
-    //     electricityCost
-    // });
+    const [userResult] = await connection.query(
+      "SELECT UserName FROM Unit_Credentials WHERE UnitID = ?",
+      [unit_id]
+    );
+    const userId = userResult[0].user_id;
+    // Emit the update to the specific user's room
+    io.to(userId).emit("utilityUpdate", {
+      unit_id,
+      month,
+      previousBalance,
+      totalCost,
+      newBalance,
+      gasUsage,
+      gasCost,
+      waterUsage,
+      waterCost,
+      electricityUsage,
+      electricityCost,
+    });
 
     return res
       .status(200)

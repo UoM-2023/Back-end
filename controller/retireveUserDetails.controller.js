@@ -20,7 +20,8 @@ async function retrieveUser(req, res) {
             ri.member_type,
             ri.email,
             ri.mobile_no,
-            ri.Address
+            ri.Address,
+            ri.name_with_initials
         FROM 
             Unit_Credentials uc
         INNER JOIN 
