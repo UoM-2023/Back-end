@@ -1,8 +1,8 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
-const io = require("../index");
+// const io = require("../index");
 
-let connection;
+// let connection;
 
 // async function addUtilityCharge(req, res) {
 //   try {
@@ -204,26 +204,26 @@ async function addUtilityCharge(req, res) {
       [utilityCharge_id, unit_id, electricityUsage, electricityCost]
     );
 
-    // Socket connection
-    const [userResult] = await connection.query(
-      "SELECT UserName FROM Unit_Credentials WHERE UnitID = ?",
-      [unit_id]
-    );
-    const userId = userResult[0].user_id;
-    // Emit the update to the specific user's room
-    io.to(userId).emit("utilityUpdate", {
-      unit_id,
-      month,
-      previousBalance,
-      totalCost,
-      newBalance,
-      gasUsage,
-      gasCost,
-      waterUsage,
-      waterCost,
-      electricityUsage,
-      electricityCost,
-    });
+    // // Socket connection
+    // const [userResult] = await connection.query(
+    //   "SELECT UserName FROM Unit_Credentials WHERE UnitID = ?",
+    //   [unit_id]
+    // );
+    // const userId = userResult[0].user_id;
+    // // Emit the update to the specific user's room
+    // io.to(userId).emit("utilityUpdate", {
+    //   unit_id,
+    //   month,
+    //   previousBalance,
+    //   totalCost,
+    //   newBalance,
+    //   gasUsage,
+    //   gasCost,
+    //   waterUsage,
+    //   waterCost,
+    //   electricityUsage,
+    //   electricityCost,
+    // });
 
     return res
       .status(200)

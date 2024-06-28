@@ -131,4 +131,44 @@ async function getOneUtilityDetail(req, res) {
   }
 }
 
-module.exports = { addNewUtility, getUtitlityDetails, getOneUtilityDetail };
+async function updateUtilityDetails (req, res) {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+
+    console.log("Update")
+
+    const { utility_name, priceRange, basePrice, unitPrice, modifiedBy } = req.body;
+
+    // Update price data in 'utility_prices' table based on utility type and price range
+    const updateQuery = `
+      UPDATE utility_prices up
+      JOIN utilityDetails ud ON up.utility_id = ud.utility_id
+      SET up.base_price = ?, up.unit_price = ?, ud.modified_by = ?
+      WHERE ud.utility_name = ? AND up.price_range = ?
+    `;
+
+    try {
+      const [result] = await connection.query(updateQuery, [
+        basePrice,
+        unitPrice,
+        modifiedBy,
+        utility_name,
+        priceRange
+      ]);
+
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Data updated successfully" });
+      } else {
+        res.status(404).json({ message: "Utility or Price Range not found" });
+      }
+    } catch (error) {
+      console.error("Failed to update data", error);
+      return res.status(500).json({ message: "Process Failed" });
+    }
+  } catch (error) {
+    console.error("Failed to connect to database", error);
+    return res.status(500).json({ message: "Process Failed" });
+  }
+}
+
+module.exports = { addNewUtility, getUtitlityDetails, getOneUtilityDetail, updateUtilityDetails };

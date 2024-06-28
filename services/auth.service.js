@@ -40,68 +40,68 @@ async function register(req, res) {
   }
 }
 
-async function login(req, res) {
-  try {
-    const { userID, password } = req.body;
-    console.log(userID);
+// async function login(req, res) {
+//   try {
+//     const { userID, password } = req.body;
+//     console.log(userID);
 
-    // Check user is exists with "getUserByID" function in database.js
-    const user = await getUserByID(userID);
+//     // Check user is exists with "getUserByID" function in database.js
+//     const user = await getUserByID(userID);
 
-    if (user == null) {
-      return res.status(401).json({ message: "Invalid username" });
-    }
-    // If User name is correct compare password with the entered password
-    const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
-    if (checkValidPassword) {
-      user.Password = undefined;
-      //Creating token
-      const accessToken = jwt.sign(
-        {
-          userId: user.userID,
-          role: user.role,
-        },
-        process.env.SECRET_KEY,
-        {
-          expiresIn: "30m",
-        }
-      );
-      res.cookie("token", accessToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 30 * 60 * 1000,
-      });
+//     if (user == null) {
+//       return res.status(401).json({ message: "Invalid username" });
+//     }
+//     // If User name is correct compare password with the entered password
+//     const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
+//     if (checkValidPassword) {
+//       user.Password = undefined;
+//       //Creating token
+//       const accessToken = jwt.sign(
+//         {
+//           userId: user.userID,
+//           role: user.role,
+//         },
+//         process.env.SECRET_KEY,
+//         {
+//           expiresIn: "1d",
+//         }
+//       );
+//       res.cookie("token", accessToken, {
+//         httpOnly: true,
+//         sameSite: "None",
+//         secure: true,
+//         maxAge: 24 * 60 * 60 * 1000,
+//       });
 
-      // Refresh Token
-      const refreshToken = jwt.sign(
-        {
-          user: user.userID,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        {
-          expiresIn: "2d",
-        }
-      );
-      res.cookie("refresh_token", refreshToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 2 * 24 * 60 * 60 * 1000,
-      });
-      return res.json({
-        token: accessToken,
-        refeshToken: refreshToken,
-        LoggedUserId: userID,
-      });
-    } else {
-      return res.status(401).json({ message: "Invalid Password" });
-    }
-  } catch (err) {
-    console.error("Database operation failed", err);
-    return res.status(201).json({ message: "Server Error" });
-  }
-}
+//       // Refresh Token
+//       const refreshToken = jwt.sign(
+//         {
+//           user: user.userID,
+//         },
+//         process.env.REFRESH_TOKEN_SECRET,
+//         {
+//           expiresIn: "2d",
+//         }
+//       );
+//       res.cookie("refresh_token", refreshToken, {
+//         httpOnly: true,
+//         sameSite: "None",
+//         secure: true,
+//         maxAge: 2 * 24 * 60 * 60 * 1000,
+//       });
+//       return res.json({
+//         token: accessToken,
+//         refeshToken: refreshToken,
+//         LoggedUserId: userID,
+//       });
+//     } else {
+//       return res.status(401).json({ message: "Invalid Password" });
+//     }
+//   } catch (err) {
+//     console.error("Database operation failed", err);
+//     return res.status(201).json({ message: "Server Error" });
+//   }
+// }
 
 async function refresh(req, res) {
   try {
@@ -127,7 +127,7 @@ async function refresh(req, res) {
               role: user.role, // Include user role in the access token payload
             },
             process.env.SECRET_KEY,
-            { expiresIn: "30m" }
+            { expiresIn: "1d" }
           );
 
           // Set access token as a cookie in the response
@@ -135,7 +135,7 @@ async function refresh(req, res) {
             httpOnly: true,
             sameSite: "None",
             secure: true,
-            maxAge: 30 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000,
           });
           return res.status(200).json({ token: accessToken });
         }
@@ -169,14 +169,14 @@ async function login(req, res) {
         },
         process.env.SECRET_KEY,
         {
-          expiresIn: "30m",
+          expiresIn: "1d",
         }
       );
       res.cookie("token", accessToken, {
         httpOnly: true,
         sameSite: "None",
         secure: true,
-        maxAge: 30 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       });
   
               // Refresh Token
@@ -200,95 +200,95 @@ async function login(req, res) {
   }
 }
 
-async function refresh(req, res) {
-  try {
-    console.log("Cookies:", req.cookies);
-    const refreshToken = req.cookies.refresh_token;
-    console.log(refreshToken);
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      (err, decoded) => {
-        if (err) {
-          console.log(err);
-          return res.status(406).json({ message: "Unauthorized" });
-        } else {
-          // Fetch user details from database based on the user ID in the token
-          const user = getUserByID(decoded.user);
-          const accessToken = jwt.sign(
-            {
-              user: decoded.user,
-              role: user.role, // Include user role in the access token payload
-            },
-            process.env.SECRET_KEY,
-            { expiresIn: "2m" }
-          );
+// async function refresh(req, res) {
+//   try {
+//     console.log("Cookies:", req.cookies);
+//     const refreshToken = req.cookies.refresh_token;
+//     console.log(refreshToken);
+//     if (!refreshToken) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+//     jwt.verify(
+//       refreshToken,
+//       process.env.REFRESH_TOKEN_SECRET,
+//       (err, decoded) => {
+//         if (err) {
+//           console.log(err);
+//           return res.status(406).json({ message: "Unauthorized" });
+//         } else {
+//           // Fetch user details from database based on the user ID in the token
+//           const user = getUserByID(decoded.user);
+//           const accessToken = jwt.sign(
+//             {
+//               user: decoded.user,
+//               role: user.role, // Include user role in the access token payload
+//             },
+//             process.env.SECRET_KEY,
+//             { expiresIn: "2m" }
+//           );
 
-          // Set access token as a cookie in the response
-          res.cookie("token", accessToken, {
-            httpOnly: true,
-            sameSite: "None",
-            secure: true,
-            maxAge: 2 * 60 * 1000,
-          });
-          return res.status(200).json({ token: accessToken });
-        }
-      }
-    );
-  } catch (err) {
-    console.error("Database operation failed", err);
-    return res.status(201).json({ message: "Server Error" });
-  }
-}
+//           // Set access token as a cookie in the response
+//           res.cookie("token", accessToken, {
+//             httpOnly: true,
+//             sameSite: "None",
+//             secure: true,
+//             maxAge: 2 * 60 * 1000,
+//           });
+//           return res.status(200).json({ token: accessToken });
+//         }
+//       }
+//     );
+//   } catch (err) {
+//     console.error("Database operation failed", err);
+//     return res.status(201).json({ message: "Server Error" });
+//   }
+// }
 
-async function refresh(req, res) {
-  try {
-    console.log("Cookies:", req.cookies);
-    const refreshToken = req.cookies.refresh_token;
-    console.log(refreshToken);
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
-      (err, decoded) => {
-        if (err) {
-          console.log(err);
-          return res.status(406).json({ message: "Unauthorized" });
-        } else {
-          // Fetch user details from database based on the user ID in the token
-          const user = getUserByID(decoded.user);
-          const accessToken = jwt.sign(
-            {
-              user: decoded.user,
-              role: user.role, // Include user role in the access token payload
-            },
-            process.env.SECRET_KEY,
-            { expiresIn: "2m" }
-          );
+// async function refresh(req, res) {
+//   try {
+//     console.log("Cookies:", req.cookies);
+//     const refreshToken = req.cookies.refresh_token;
+//     console.log(refreshToken);
+//     if (!refreshToken) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+//     jwt.verify(
+//       refreshToken,
+//       process.env.REFRESH_TOKEN_SECRET,
+//       (err, decoded) => {
+//         if (err) {
+//           console.log(err);
+//           return res.status(406).json({ message: "Unauthorized" });
+//         } else {
+//           // Fetch user details from database based on the user ID in the token
+//           const user = getUserByID(decoded.user);
+//           const accessToken = jwt.sign(
+//             {
+//               user: decoded.user,
+//               role: user.role, // Include user role in the access token payload
+//             },
+//             process.env.SECRET_KEY,
+//             { expiresIn: "1d" }
+//           );
 
-          // Set access token as a cookie in the response
-          res.cookie("token", accessToken, {
-            httpOnly: true,
-            sameSite: "None",
-            secure: true,
-            maxAge: 2 * 60 * 1000,
-          });
-          return res
-            .status(200)
-            .json({ token: accessToken, userId: decoded.user });
-        }
-      }
-    );
-  } catch (err) {
-    console.error("Database operation failed", err);
-    return res.status(201).json({ message: "Server Error" });
-  }
-}
+//           // Set access token as a cookie in the response
+//           res.cookie("token", accessToken, {
+//             httpOnly: true,
+//             sameSite: "None",
+//             secure: true,
+//             maxAge: 24 * 60 * 60 * 1000,
+//           });
+//           return res
+//             .status(200)
+//             .json({ token: accessToken, userId: decoded.user });
+//         }
+//       }
+//     );
+//   } catch (err) {
+//     console.error("Database operation failed", err);
+//     return res.status(201).json({ message: "Server Error" });
+//   }
+// }
 async function logout(req, res) {
   try {
     console.log("Logout called");
