@@ -3,9 +3,11 @@ const dbConfig = require("../config/db.config");
 const multer = require("multer");
 const path = require("path");
 
+let connection;
+
 async function addNewResident(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       residentID,
@@ -70,6 +72,10 @@ async function addNewResident(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -79,7 +85,7 @@ async function getAllResidentsDetails(req, res) {
   try {
     console.log("Resident Get func Called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Residents_Information`;
 
@@ -94,6 +100,10 @@ async function getAllResidentsDetails(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Residents Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -103,7 +113,7 @@ async function getResidentById(req, res) {
   try {
     console.log("Called with Resident ID");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Residents_Information WHERE residentID = ?`;
     const id = req.params.residentID;
@@ -116,6 +126,10 @@ async function getResidentById(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Resident Details " });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -125,7 +139,7 @@ async function getResidentByUnitID(req, res) {
   try {
     console.log("Called with Unit ID");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Residents_Information WHERE UnitID = ?`;
     const id = req.params.UnitID;
@@ -139,6 +153,10 @@ async function getResidentByUnitID(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Resident  Details by UnitID" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -146,7 +164,7 @@ async function getResidentByUnitID(req, res) {
 
 async function deleteResident(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const id = req.params.residentID;
 
@@ -168,6 +186,10 @@ async function deleteResident(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to delete Resident details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -175,7 +197,7 @@ async function deleteResident(req, res) {
 
 async function updateResident(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       UnitID,
@@ -240,6 +262,10 @@ async function updateResident(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to update Resident Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

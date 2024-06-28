@@ -2,8 +2,9 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 async function updateBalanace(req, res) {
+    let connection;
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const query = `SELECT fundName, amount FROM fundTypes`;
 
         let sinkingFundAmount = 0;
@@ -31,6 +32,10 @@ async function updateBalanace(req, res) {
     } catch (error) {
         console.error("Failed to save data", error);
         return res.status(201).json({ message: "Process Failed" });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

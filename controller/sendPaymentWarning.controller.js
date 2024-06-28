@@ -3,10 +3,11 @@ const dbConfig = require('../config/db.config');
 // const { users, io } = require('../index');
 const socketManager = require('../sockets/socketManager');
 
+let connection; 
 
 async function sendPaymentWarning (req,res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const { unit_id, message } = req.body;
 
         const users = socketManager.getUsers();
@@ -38,6 +39,10 @@ async function sendPaymentWarning (req,res) {
     } catch (error) {
         console.error('Failed to send the notification',error);
         return res.status(201).json({message:'Failed to send the warning'});
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

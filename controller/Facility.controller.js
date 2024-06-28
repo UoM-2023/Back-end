@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
-
+let connection;
 //add facility
 async function facilityReserve(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             facility_name,
@@ -28,6 +28,10 @@ async function facilityReserve(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Failed to connect to database' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -38,7 +42,7 @@ async function getAllfacilityReserve(req, res) {
     try {
         console.log("called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM Facilities`;
 
@@ -51,6 +55,10 @@ async function getAllfacilityReserve(req, res) {
     } catch (error) {
         console.error('Failed to get facilities', error);
         return res.status(500).json({ message: 'Failed to get facilities' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -60,7 +68,7 @@ async function getAFacility(req, res) {
     try {
         console.log("Called with id");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM Facilities WHERE ref_no = ?`;
         const id = req.params.id;
@@ -74,6 +82,10 @@ async function getAFacility(req, res) {
     } catch (error) {
         console.error('Failed to get the facility', error);
         return res.status(500).json({ message: 'Failed to get the facility' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -82,7 +94,7 @@ async function getAFacility(req, res) {
 //update a facility
 async function updateFacility(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             facility_name,
@@ -109,6 +121,10 @@ async function updateFacility(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Failed to connect to database' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -116,7 +132,7 @@ async function updateFacility(req, res) {
 //delete facility
 async function deleteFacility(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM Facilities WHERE ref_no = ?';
@@ -134,6 +150,10 @@ async function deleteFacility(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Failed to connect to database' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

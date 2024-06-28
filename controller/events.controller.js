@@ -3,7 +3,7 @@ const dbConfig = require('../config/db.config');
 
 async function addNewEvent(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             event,
@@ -31,6 +31,10 @@ async function addNewEvent(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Internal Server Error' }); // Return appropriate error response
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -38,7 +42,7 @@ async function getAllEvents(req, res) {
     try {
         console.log("called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = 'SELECT * FROM NN_Events';
         
@@ -52,6 +56,10 @@ async function getAllEvents(req, res) {
     } catch (error) {
         console.error('Failed to retrieve events', error);
         return res.status(500).json({ message: 'Failed to retrieve events' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -60,7 +68,7 @@ async function getAnEvent(req, res) {
     try {
         console.log("Called with id");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const id = req.params.id;
 
@@ -83,12 +91,16 @@ async function getAnEvent(req, res) {
     } catch (error) {
         console.error('Failed to connect to the database:', error);
         return res.status(500).json({ message: 'Failed to retrieve event' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 async function updateEvent(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             event,
@@ -113,17 +125,19 @@ async function updateEvent(req,res){
             return res.status(201).json({message:'Process Failed'});
         }
 
-
-
     } catch (error) {
         console.error('Failed to retrieve event', error);
         return res.status(500).json({ message: 'Failed to update event' });        
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 async function deleteEvent(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM NN_Events WHERE Event_no = ?'
@@ -139,6 +153,10 @@ async function deleteEvent(req,res){
     } catch (error) {
         console.error('Failed to retrieve event', error);
         return res.status(500).json({ message: 'Failed to update event' }); 
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

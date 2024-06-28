@@ -10,10 +10,10 @@ const io = socketIo(server);
 
 app.use(express.json());
 
-
+let connection;
 async function addNewNotice(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             type,
@@ -42,6 +42,10 @@ async function addNewNotice(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Internal Server Error' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -51,7 +55,7 @@ async function getAllNotices(req, res) {
     try {
         console.log("called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = 'SELECT * FROM Notices';
         
@@ -65,6 +69,10 @@ async function getAllNotices(req, res) {
     } catch (error) {
         console.error('Failed to retrieve notices', error);
         return res.status(500).json({ message: 'Failed to retrieve notices' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -96,13 +104,17 @@ async function getANotice(req, res) {
     } catch (error) {
         console.error('Failed to connect to the database:', error);
         return res.status(500).json({ message: 'Failed to retrieve notice' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 
 async function updateNotice(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             type,
@@ -132,13 +144,17 @@ async function updateNotice(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Failed to update notice' });        
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 
 async function deleteNotice(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM Notices WHERE Notice_no = ?'
@@ -154,6 +170,10 @@ async function deleteNotice(req,res){
     } catch (error) {
         console.error('Failed to retrieve notice', error);
         return res.status(500).json({ message: 'Failed to update notice' }); 
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

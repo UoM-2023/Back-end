@@ -1,9 +1,11 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
+let connection;
+
 async function addNewComplaint(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         try {
             const {
@@ -29,6 +31,10 @@ async function addNewComplaint(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Internal Server Error' }); // Return appropriate error response
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -37,7 +43,7 @@ async function getAllComplaints(req, res) {
     try {
         console.log("called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = 'SELECT * FROM Complaints';
         
@@ -51,6 +57,10 @@ async function getAllComplaints(req, res) {
     } catch (error) {
         console.error('Failed to retrieve complaints', error);
         return res.status(500).json({ message: 'Failed to retrieve complaints' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -82,13 +92,17 @@ async function getAComplaint(req, res) {
     } catch (error) {
         console.error('Failed to connect to the database:', error);
         return res.status(500).json({ message: 'Failed to retrieve complaint' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 
 async function updateComplaint(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             Nature,
@@ -118,12 +132,16 @@ async function updateComplaint(req,res){
     } catch (error) {
         console.error('Failed to retrieve complaint', error);
         return res.status(500).json({ message: 'Failed to update complaint' });        
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 async function deleteComplaint(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM Complaints WHERE Reference_id = ?'
@@ -139,6 +157,10 @@ async function deleteComplaint(req,res){
     } catch (error) {
         console.error('Failed to retrieve complaint', error);
         return res.status(500).json({ message: 'Failed to update complaint' }); 
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

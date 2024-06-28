@@ -1,9 +1,10 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+let connection;
 async function addNewUtility(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { utilityData, priceData } = req.body;
 
@@ -38,12 +39,16 @@ async function addNewUtility(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function getUtitlityDetails(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     // Execute the query and wait for the results
     const [utilityDetailResults] = await connection.query(
@@ -78,6 +83,10 @@ async function getUtitlityDetails(req, res) {
   } catch (error) {
     console.error("Failed to retrieve data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -85,7 +94,7 @@ async function getOneUtilityDetail(req, res) {
   try {
     const utilityId = req.params.id; // Get the utility_id from request parameters
     console.log("Called GetAUtility", utilityId);
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     // Execute the query and wait for the results
     const [utilityDetailResults] = await connection.query(
@@ -128,12 +137,16 @@ async function getOneUtilityDetail(req, res) {
   } catch (error) {
     console.error("Failed to retrieve data", error);
     return res.status(500).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function updateUtilityDetails (req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     console.log("Update")
 
@@ -168,6 +181,10 @@ async function updateUtilityDetails (req, res) {
   } catch (error) {
     console.error("Failed to connect to database", error);
     return res.status(500).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

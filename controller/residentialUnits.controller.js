@@ -1,10 +1,11 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
+let connection;
 
 async function addNewUnit(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             Unit_id,
@@ -32,6 +33,10 @@ async function addNewUnit(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Internal Server Error' }); // Return appropriate error response
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -39,7 +44,7 @@ async function getAllUnits(req, res) {
     try {
         console.log("Called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM ResidentialUnit`;
 
@@ -56,6 +61,10 @@ async function getAllUnits(req, res) {
     } catch (error) {
         console.error('Failed to connect to the database:', error);
         return res.status(500).json({ message: 'Failed to retrieve residential units' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -64,7 +73,7 @@ async function getAUnit(req, res) {
     try {
         console.log("Called with id");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const id = req.params.id;
 
@@ -87,13 +96,17 @@ async function getAUnit(req, res) {
     } catch (error) {
         console.error('Failed to connect to the database:', error);
         return res.status(500).json({ message: 'Failed to retrieve residential unit' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 
 async function updateUnit(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             Block_no,
@@ -117,18 +130,19 @@ async function updateUnit(req,res){
             console.error('Failed to save data',error);
             return res.status(201).json({message:'Process Failed'});
         }
-
-
-
     } catch (error) {
         console.error('Failed to retrieve residential unit', error);
         return res.status(500).json({ message: 'Failed to update residential unit' });        
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
 async function deleteUnit(req,res){
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM ResidentialUnit WHERE Unit_id = ?'
@@ -144,6 +158,10 @@ async function deleteUnit(req,res){
     } catch (error) {
         console.error('Failed to retrieve residential unit', error);
         return res.status(500).json({ message: 'Failed to update residential unit' }); 
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 

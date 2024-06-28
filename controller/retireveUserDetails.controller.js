@@ -1,9 +1,11 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+let connection;
+
 async function retrieveUser(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const user_id = req.params.id;
 
@@ -38,6 +40,10 @@ async function retrieveUser(req, res) {
   } catch (error) {
     console.error("Failed to retieve data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

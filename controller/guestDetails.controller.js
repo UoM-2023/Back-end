@@ -3,11 +3,11 @@ const dbConfig = require('../config/db.config');
 
 
 //add guest details
-
+let connection;
 
 async function addGuestDetails(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             unit_ID,
@@ -36,6 +36,10 @@ async function addGuestDetails(req, res) {
     } catch (error) {
         console.error('Failed to connect to database', error);
         return res.status(500).json({ message: 'Process Failed' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -50,7 +54,7 @@ async function getAllGuestDetails(req, res) {
     try {
         console.log("called");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM Guest_Details`;
 
@@ -62,6 +66,10 @@ async function getAllGuestDetails(req, res) {
     } catch (error) {
         console.error('Failed to retrieve guest details', error);
         return res.status(500).json({ message: 'Failed to retrieve guest details' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -73,7 +81,7 @@ async function getAGuestDetail(req, res) {
     try {
         console.log("Called with id");
 
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM Guest_Details WHERE guest_ID = ?`;
         const guest_ID = req.params.id; 
@@ -85,6 +93,10 @@ async function getAGuestDetail(req, res) {
     } catch (error) {
         console.error('Failed to get guest detail', error);
         return res.status(500).json({ message: 'Failed to get guest detail' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -93,7 +105,7 @@ async function getAGuestDetail(req, res) {
 
 async function updateGuestDetails(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
 
         const {
             guest_ID,
@@ -124,6 +136,10 @@ async function updateGuestDetails(req, res) {
     } catch (error) {
         console.error('Failed to update guest details', error);
         return res.status(500).json({ message: 'Failed to update guest details' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
 
@@ -132,7 +148,7 @@ async function updateGuestDetails(req, res) {
 
 async function deleteGuestDetails(req, res) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
+        connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM Guest_Details WHERE guest_ID = ?';
@@ -148,11 +164,12 @@ async function deleteGuestDetails(req, res) {
     } catch (error) {
         console.error('Failed to delete guest details', error);
         return res.status(500).json({ message: 'Failed to delete guest details' });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
     }
 }
-
-
-
 
 module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails};
 

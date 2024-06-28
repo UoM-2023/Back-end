@@ -1,11 +1,11 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
-
+let connection
 //add reservations
 async function addReservation(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       facility_name,
@@ -51,6 +51,10 @@ async function addReservation(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -60,7 +64,7 @@ async function getAllReservations(req, res) {
   try {
     console.log("called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Reservations`;
 
@@ -70,6 +74,10 @@ async function getAllReservations(req, res) {
   } catch (error) {
     console.error("Failed to get all  reservations", error);
     return res.status(500).json({ message: "Failed to get all  reservations" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -103,7 +111,7 @@ async function getAllByFaciName(req, res) {
   try {
       console.log("Called with facility name");
 
-      const connection = await mysql.createConnection(dbConfig);
+      connection = await mysql.createConnection(dbConfig);
 
       const facility_name = req.params.facility_name;
 
@@ -122,10 +130,13 @@ async function getAllByFaciName(req, res) {
           await connection.end(); // Ensure the connection is closed in case of error
           return res.status(500).json({ message: 'Failed to retrieve reservations' });
       }
-
   } catch (error) {
       console.error('Failed to connect to the database:', error);
       return res.status(500).json({ message: 'Failed to retrieve reservations' });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -140,7 +151,7 @@ async function getAReservation(req, res) {
   try {
     console.log("Called with id");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
     const query = `SELECT * FROM Reservations WHERE ref_no = ?`;
     const id = req.params.id;
 
@@ -157,6 +168,10 @@ async function getAReservation(req, res) {
   } catch (error) {
     console.error("Failed to get reservation", error);
     return res.status(500).json({ message: "Failed to get reservation" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -164,7 +179,7 @@ async function getAReservation(req, res) {
 
 async function updateReservation(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       facility_name,
@@ -209,6 +224,10 @@ async function updateReservation(req, res) {
   } catch (error) {
     console.error("Failed to update reservation", error);
     return res.status(500).json({ message: "Failed to update reservation" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -216,7 +235,7 @@ async function updateReservation(req, res) {
 
 async function deleteReservation(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
     const id = req.params.id;
 
     const query = "DELETE FROM Reservations WHERE ref_no = ?";
@@ -235,6 +254,10 @@ async function deleteReservation(req, res) {
   } catch (error) {
     console.error("Failed to Delete data", error);
     return res.status(500).json({ message: "Failed to delete reservation" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
