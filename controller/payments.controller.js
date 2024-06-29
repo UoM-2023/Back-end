@@ -2,8 +2,9 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 async function addNewPayment(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { user_id, unit_id, charge_type, method, amount, payment_id } =
       req.body;
@@ -61,15 +62,20 @@ async function addNewPayment(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function getAllPayments(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query =
-      "SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID";
+      "SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID AND member_type = 'Owner'";
 
     const result = await connection.query(query);
 
@@ -77,6 +83,10 @@ async function getAllPayments(req, res) {
   } catch (error) {
     console.error("Failed to retrieve data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 module.exports = { addNewPayment, getAllPayments };

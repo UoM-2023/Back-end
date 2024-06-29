@@ -2,10 +2,11 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
+let connection;
 
 async function addNewStaff(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       staffID,
@@ -75,7 +76,11 @@ async function addNewStaff(req, res) {
     return res
       .status(201)
       .json({ message: "Oops! There was an issue Adding Staff Details" });
-  }
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+}
 }
 
 // GET all Function
@@ -84,7 +89,7 @@ async function getAllStaffDetails(req, res) {
   try {
     console.log("Staff Get func Called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Staff_Information`;
 
@@ -100,6 +105,10 @@ async function getAllStaffDetails(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Staff Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -109,7 +118,7 @@ async function getStaffById(req, res) {
   try {
     console.log("Called with Staff ID");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Staff_Information WHERE staffID = ?`;
     const id = req.params.staffID;
@@ -123,6 +132,10 @@ async function getStaffById(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Staff Details " });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -130,7 +143,7 @@ async function getStaffById(req, res) {
 
 async function deleteStaff(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const id = req.params.staffID;
 
@@ -150,6 +163,10 @@ async function deleteStaff(req, res) {
   } catch (error) {
     console.error("Failed to connect to database", error);
     return res.status(500).json({ message: "Failed to delete staff details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -157,7 +174,7 @@ async function deleteStaff(req, res) {
 
 async function updateStaff(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       first_name,
@@ -227,6 +244,10 @@ async function updateStaff(req, res) {
     return res
       .status(500)
       .json({ message: "Oops! Failed to update Staff Details." });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
