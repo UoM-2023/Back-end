@@ -7,7 +7,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const config = require("./config/db.config");
 const database = require("./database/database");
-const mysql = require('mysql2/promise');
+const mysql = require("mysql2/promise");
 const socketIo = require("socket.io");
 const socketManager = require("./sockets/socketManager");
 const multer = require("multer");
@@ -23,10 +23,10 @@ const authRoute = require("./routes/auth.route");
 const financeRoute = require("./routes/finance.route");
 const residentsdetailsRoute = require("./routes/residentsdetails.route");
 const staffdetailsRoute = require("./routes/staffdetails.route");
-const residentialUnitsRoute=require("./routes/residentialunits.route");
-const newsNoticesRoute=require("./routes/newsnnotices.route");
-const complaintsRoute=require("./routes/complaints.route");
-const socketHandlers = require('./sockets/socketHandlers');
+const residentialUnitsRoute = require("./routes/residentialunits.route");
+const newsNoticesRoute = require("./routes/newsnnotices.route");
+const complaintsRoute = require("./routes/complaints.route");
+const socketHandlers = require("./sockets/socketHandlers");
 const GuestDetailsRoute = require("./routes/guest.route");
 const ReservationsRoute = require("./routes/reservation.route");
 const FacilityRoute = require("./routes/facility.route");
@@ -50,7 +50,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const server = http.createServer(app);
 const io = socketIo(server, {
-  path: '/socket.io' // Default path, but can be customized
+  path: "/socket.io", // Default path, but can be customized
 });
 
 dotenv.config();
@@ -81,7 +81,7 @@ async function runScripts() {
 
 runScripts();
 
-require('./controller/cronJob.controller')
+require("./controller/cronJob.controller");
 // require('./controller/cronJobTesing.controller');
 socketManager.initializeSocket(server);
 
@@ -92,9 +92,9 @@ app.use("/auth", authRoute);
 app.use("/finance", financeRoute);
 app.use("/residentsDetails", residentsdetailsRoute);
 app.use("/staffDetails", staffdetailsRoute);
-app.use("/residentialUnits",residentialUnitsRoute);
-app.use("/newsNotices",newsNoticesRoute);
-app.use("/complaints",complaintsRoute);
+app.use("/residentialUnits", residentialUnitsRoute);
+app.use("/newsNotices", newsNoticesRoute);
+app.use("/complaints", complaintsRoute);
 app.use("/GuestDetail", GuestDetailsRoute);
 app.use("/Reservation", ReservationsRoute);
 app.use("/Facility", FacilityRoute);

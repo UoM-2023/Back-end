@@ -27,7 +27,7 @@ async function updatePassword(req, res) {
     const isMatch = await bcrypt.compare(oldPassword, user.userPassword);
     if (!isMatch) {
       await connection.end();
-      return res.status(400).send({ message: "Old password is incorrect" });
+      return res.status(201).json({ message: "Old password is incorrect" });
     }
 
     const hashedPassword = await bcrypt.hash(userPassword, 8);
@@ -48,31 +48,4 @@ async function updatePassword(req, res) {
   }
 }
 
-// Get By Id Function (UserID)
-
-async function getUserByuserID(req, res) {
-  try {
-    console.log("Called with UserID");
-
-    connection = await mysql.createConnection(dbConfig);
-
-    const query = `SELECT * FROM User_Credentials WHERE UserID = ?`;
-    const id = req.params.UserID;
-
-    const [result] = await connection.query(query, [id]);
-
-    console.log(result);
-    return res.status(200).json({ result: result });
-  } catch (error) {
-    console.error("Failed to retrieve User Details by UserID", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to retrieve User  Details by UserID" });
-  } finally {
-    if (connection) {
-      await connection.end();
-    }
-  }
-}
-
-module.exports = { updatePassword, getUserByuserID };
+module.exports = { updatePassword };
