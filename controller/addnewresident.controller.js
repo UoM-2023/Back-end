@@ -1,5 +1,7 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
+const multer = require("multer");
+const path = require("path");
 
 async function addNewResident(req, res) {
   try {
@@ -8,10 +10,6 @@ async function addNewResident(req, res) {
     const {
       residentID,
       UnitID,
-      building,
-      block_no,
-      unit_category,
-      unit_no,
       first_name,
       middle_name,
       last_name,
@@ -28,10 +26,6 @@ async function addNewResident(req, res) {
     console.log(
       residentID,
       UnitID,
-      building,
-      block_no,
-      unit_category,
-      unit_no,
       first_name,
       middle_name,
       last_name,
@@ -46,16 +40,12 @@ async function addNewResident(req, res) {
     );
 
     const add =
-      "INSERT INTO Residents_Information (residentID, UnitID, building, block_no, unit_category, unit_no, first_name, middle_name, last_name, name_with_initials, gender, dob, nic, member_type, email, mobile_no, Address ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      "INSERT INTO Residents_Information (residentID, UnitID, first_name, middle_name, last_name, name_with_initials, gender, dob, nic, member_type, email, mobile_no, Address ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
     try {
       await connection.query(add, [
         residentID,
         UnitID,
-        building,
-        block_no,
-        unit_category,
-        unit_no,
         first_name,
         middle_name,
         last_name,
@@ -141,7 +131,7 @@ async function getResidentByUnitID(req, res) {
     const id = req.params.UnitID;
 
     const [result] = await connection.query(query, [id]);
-    
+
     console.log(result);
     return res.status(200).json({ result: result });
   } catch (error) {
@@ -189,10 +179,6 @@ async function updateResident(req, res) {
 
     const {
       UnitID,
-      building,
-      block_no,
-      unit_category,
-      unit_no,
       first_name,
       middle_name,
       last_name,
@@ -210,10 +196,6 @@ async function updateResident(req, res) {
 
     console.log(
       UnitID,
-      building,
-      block_no,
-      unit_category,
-      unit_no,
       first_name,
       middle_name,
       last_name,
@@ -228,15 +210,11 @@ async function updateResident(req, res) {
     );
 
     const query =
-      "UPDATE Residents_Information SET UnitID = ?, building = ?, block_no = ?, unit_category = ?, unit_no = ?, first_name = ?, middle_name = ?, last_name = ?, name_with_initials = ?, gender = ?, dob = ?, nic = ?, member_type = ?, email = ?, mobile_no = ?, Address = ? WHERE residentID = ?";
+      "UPDATE Residents_Information SET UnitID = ?, first_name = ?, middle_name = ?, last_name = ?, name_with_initials = ?, gender = ?, dob = ?, nic = ?, member_type = ?, email = ?, mobile_no = ?, Address = ? WHERE residentID = ?";
 
     try {
       await connection.query(query, [
         UnitID,
-        building,
-        block_no,
-        unit_category,
-        unit_no,
         first_name,
         middle_name,
         last_name,

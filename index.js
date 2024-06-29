@@ -8,6 +8,9 @@ const config = require("./config/db.config");
 const database = require("./database/database");
 const http = require("http");
 const socketIo = require("socket.io");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // Imported Routes
 
@@ -18,10 +21,12 @@ const authRoute = require("./routes/auth.route");
 const financeRoute = require("./routes/finance.route");
 const residentsdetailsRoute = require("./routes/residentsdetails.route");
 const staffdetailsRoute = require("./routes/staffdetails.route");
-const userCredentialsRoute = require("./routes/usercredentials.route");
+const userCredentialsRoute = require("./routes/usercredentials.route");  
 const testRoute = require("./routes/test.route");
 
-// Configurations
+
+
+// Configurations 
 const app = express();
 const server = http.createServer(app);
 
@@ -59,15 +64,14 @@ app.use("/userCredentials", userCredentialsRoute);
 app.use("/testing", testRoute);
 app.use("/maintenance", maintenanceRoute);
 
+
 // Socket connection
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
-  // Join room based on userId
-  socket.on("joinRoom", (userId) => {
-    socket.join(userId);
-    console.log(`Socket ${socket.id} joined room ${userId}`);
-  });
+ 
+
+
 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
@@ -77,3 +81,5 @@ io.on("connection", (socket) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = io;
