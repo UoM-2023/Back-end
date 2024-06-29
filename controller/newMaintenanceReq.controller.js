@@ -7,22 +7,15 @@ async function add_Maintenance_Request(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
 
-    const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
-      req.body;
+    const { Unit_id, MType, Mnt_Status, M_Description } = req.body;
 
-    console.log(Unit_id, Resident_Name, MType, Mnt_Status, M_Description);
+    console.log(Unit_id, MType, Mnt_Status, M_Description);
 
     const add =
-      "INSERT INTO Maintenance_Requests (Unit_id, Resident_Name, MType, Mnt_Status, requested_date, M_Description) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
+      "INSERT INTO Maintenance_Requests (Unit_id, MType, Mnt_Status, requested_date, M_Description) VALUES ( ?, ?, ?, CURRENT_TIMESTAMP, ?)";
 
     try {
-      await connection.query(add, [
-        Unit_id,
-        Resident_Name,
-        MType,
-        Mnt_Status,
-        M_Description,
-      ]);
+      await connection.query(add, [Unit_id, MType, Mnt_Status, M_Description]);
       return res
         .status(200)
         .json({ message: "New Maintenance Request Successfully Added!" });
@@ -137,20 +130,19 @@ async function update_Maintenance_Request(req, res) {
   try {
     connection = await mysql.createConnection(dbConfig);
 
-    const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
-      req.body;
+    const { Unit_id, MType, Mnt_Status, M_Description } = req.body;
 
     const id = req.params.id;
 
-    console.log(Unit_id, Resident_Name, MType, Mnt_Status, M_Description);
+    console.log(Unit_id, MType, Mnt_Status, M_Description);
 
     const query =
-      "UPDATE Maintenance_Requests SET Unit_id = ?, Resident_Name = ?, MType = ?, Mnt_Status = ?, M_Description = ? WHERE id = ?";
+      "UPDATE Maintenance_Requests SET Unit_id = ?, MType = ?, Mnt_Status = ?, M_Description = ? WHERE id = ?";
 
     try {
       await connection.query(query, [
         Unit_id,
-        Resident_Name,
+        ,
         MType,
         // Mnt_Status,
         "Pending",
