@@ -11,7 +11,6 @@ async function addGuestDetails(req, res) {
 
         const {
             unit_ID,
-            resident_name,
             guest_name,
             guest_NIC,
             vehicle_number,
@@ -19,12 +18,12 @@ async function addGuestDetails(req, res) {
             check_Out
         } = req.body;
 
-        console.log( unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
+        console.log( unit_ID,  guest_name, guest_NIC, vehicle_number, check_In, check_Out);
 
-        const add = 'INSERT INTO Guest_Details (unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
+        const add = 'INSERT INTO Guest_Details (unit_ID,  guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?)'; 
 
         try {
-            await connection.query(add, [unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out]);
+            await connection.query(add, [unit_ID,  guest_name, guest_NIC, vehicle_number, check_In, check_Out]);
             await connection.end(); // Close the connection
             return res.status(200).json({ message: 'Guest Successfully Added!' });
         } catch (error) {
@@ -39,7 +38,7 @@ async function addGuestDetails(req, res) {
     }
 }
 
-module.exports = addGuestDetails; // Ensure you export the function
+
 
 
 
@@ -98,7 +97,6 @@ async function updateGuestDetails(req, res) {
         const {
             guest_ID,
             unit_ID,
-            resident_name,
             guest_name,
             guest_NIC,
             vehicle_number,
@@ -108,12 +106,12 @@ async function updateGuestDetails(req, res) {
 
         const id = req.params.id;
 
-        console.log(guest_ID, unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
+        console.log(guest_ID, unit_ID,  guest_name, guest_NIC, vehicle_number, check_In, check_Out);
 
-        const query = 'UPDATE Guest_Details SET guest_ID = ?, unit_ID = ?, resident_name = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, check_In = ?, check_Out = ? WHERE guest_ID = ?'; 
+        const query = 'UPDATE Guest_Details SET guest_ID = ?, unit_ID = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, check_In = ?, check_Out = ? WHERE guest_ID = ?'; 
 
         try {
-            await connection.query(query, [guest_ID, unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out, id]);
+            await connection.query(query, [guest_ID, unit_ID,  guest_name, guest_NIC, vehicle_number, check_In, check_Out, id]);
             return res.status(200).json({ message: 'Guest Details Successfully Updated' });
 
         } catch (error) {
