@@ -2,10 +2,10 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
-
+let connection;
 async function add_Maintenance_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
       req.body;
@@ -35,6 +35,10 @@ async function add_Maintenance_Request(req, res) {
     return res.status(201).json({
       message: "Oops! There was an issue Adding Maintenance Request Details",
     });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -44,7 +48,7 @@ async function get_All_Maintenance_Requests(req, res) {
   try {
     console.log("called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Maintenance_Requests ORDER BY requested_date DESC`;
 
@@ -57,6 +61,10 @@ async function get_All_Maintenance_Requests(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve new maintenance requests" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -66,7 +74,7 @@ async function get_A_Maintenance_Request(req, res) {
   try {
     console.log("Called with id la la :", req.params.id);
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Maintenance_Requests WHERE id = ?`;
     const id = req.params.id;
@@ -80,6 +88,10 @@ async function get_A_Maintenance_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve maintenance request" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -89,7 +101,7 @@ async function getMaintenanceRequestsByUser(req, res) {
 
     console.log(`Called with id Get maintenance: ${unitId}`);
     console.log("Attempting to connect to the database...");
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     console.log("Database connection established.");
 
@@ -112,6 +124,10 @@ async function getMaintenanceRequestsByUser(req, res) {
       message: "Failed to retrieve maintenance requests",
       error: error.message,
     });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -119,7 +135,7 @@ async function getMaintenanceRequestsByUser(req, res) {
 
 async function update_Maintenance_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { Unit_id, Resident_Name, MType, Mnt_Status, M_Description } =
       req.body;
@@ -153,6 +169,10 @@ async function update_Maintenance_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to update maintenance request" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -160,7 +180,7 @@ async function update_Maintenance_Request(req, res) {
 
 async function delete_Maintenance_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const id = req.params.id;
 
@@ -182,12 +202,16 @@ async function delete_Maintenance_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to delete maintenance request" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function update_Maintenance_Request_Status(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
     const { id } = req.params;
     const { Mnt_Status } = req.body;
 
@@ -207,6 +231,10 @@ async function update_Maintenance_Request_Status(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to update maintenance request status" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

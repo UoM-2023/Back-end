@@ -2,14 +2,16 @@ const sql = require("mssql");
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
+let connection;
+
 async function addNewRevenue(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { paid_by, amount, rType, payment_method, staff_id } = req.body;
 
     console.log(paid_by, amount, rType, payment_method, staff_id);
-    
+
     const add = `INSERT INTO revenue (paid_by, amount, rType, payment_method, staff_id, added_date) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`;
 
     try {
@@ -34,21 +36,29 @@ async function addNewRevenue(req, res) {
     return res
       .status(201)
       .json({ message: "Oops! There was an issue Adding Revenue Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function getAllRevenues(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM revenue`;
+    const query = `SELECT * FROM revenue ORDER BY added_date DESC`;
 
-    const result = await connection.query(query);
+    const [result] = await connection.query(query);
 
     return res.status(200).json({ result: result });
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 module.exports = { addNewRevenue, getAllRevenues };

@@ -2,10 +2,11 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
+let connection;
 
 async function addNewExpense(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { expense_id, amount, eType, payment_method, staff_id, remark } =
       req.body;
@@ -36,6 +37,10 @@ async function addNewExpense(req, res) {
     return res.status(201).json({
       message: "Oops! There was an issue Adding New Expenses Details",
     });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -45,7 +50,7 @@ async function getAllExpenses(req, res) {
   try {
     console.log("called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM expenses`;
 
@@ -56,6 +61,10 @@ async function getAllExpenses(req, res) {
   } catch (error) {
     console.error("Failed to retrieve expenses", error);
     return res.status(500).json({ message: "Failed to retrieve expenses" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -65,7 +74,7 @@ async function getAExpensesByID(req, res) {
   try {
     console.log("Called with id");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM expenses WHERE id = ?`;
     const id = req.params.id;
@@ -76,6 +85,10 @@ async function getAExpensesByID(req, res) {
   } catch (error) {
     console.error("Failed to retrieve expenses", error);
     return res.status(500).json({ message: "Failed to retrieve expenses" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -83,7 +96,7 @@ async function getAExpensesByID(req, res) {
 
 async function updateExpenses(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { amount, eType, payment_method, staff_id, remark } = req.body;
 
@@ -117,6 +130,10 @@ async function updateExpenses(req, res) {
     return res
       .status(500)
       .json({ message: "Oops! There was an issue Updating Expenses Details" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

@@ -1,6 +1,8 @@
 const express = require("express");
 const newResident = require("../controller/addnewresident.controller");
-const { retrieveUser } = require("../controller/retireveUserDetails.controller");
+const {
+  retrieveUser,
+} = require("../controller/retireveUserDetails.controller");
 
 const router = express.Router();
 
@@ -27,7 +29,7 @@ router.put(
   newResident.updateResident
 );
 
-router.get('/getResidentInfo/:id', retrieveUser);
+router.get("/getResidentInfo/:id", retrieveUser);
 
 module.exports = router;
 
