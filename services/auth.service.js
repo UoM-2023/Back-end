@@ -20,8 +20,8 @@ async function register(req, res) {
     const result = await getUserByID(userID);
 
     // If user isn't exists the length will be null
-    if (result !== null) {
-      return res.status(400).json({ message: "User already exists" });
+    if (result && result.UserID) {
+      return res.status(201).json({ message: "User already exists!" });
     } else {
       // Encrypt the password
       const hashedPassword = await bcrypt.hash(password, 8);
@@ -30,10 +30,12 @@ async function register(req, res) {
 
       try {
         await connection.query(insertQuery, [userID, hashedPassword, role]);
-        return res.status(200).json({ message: "User sucessfully Registered" });
+        return res
+          .status(200)
+          .json({ message: "User Sucessfully Registered!" });
       } catch (error) {
         console.log("Failed to save data", error);
-        return res.status(201).json({ message: "Failed to register user" });
+        return res.status(201).json({ message: "Failed to Register User" });
       }
     }
   } catch (err) {

@@ -16,11 +16,7 @@ async function facilityReserve(req, res) {
       "INSERT INTO Facilities (facility_name, amount_charge, charge_per) VALUES (?, ?, ?)";
 
     try {
-      await connection.query(add, [
-        facility_name,
-        amount_charge,
-        charge_per,
-      ]);
+      await connection.query(add, [facility_name, amount_charge, charge_per]);
       return res
         .status(200)
         .json({ message: "Facility reserved successfully" });
@@ -37,7 +33,6 @@ async function facilityReserve(req, res) {
     }
   }
 }
-
 
 //get all data  from facility reserve
 
@@ -105,8 +100,7 @@ async function updateFacility(req, res) {
     try {
       connection = await mysql.createConnection(dbConfig);
 
-      const { facility_name, amount_charge, charge_per } =
-        req.body;
+      const { facility_name, amount_charge, charge_per } = req.body;
 
       const id = req.params.id;
 

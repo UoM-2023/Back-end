@@ -3,9 +3,10 @@ const dbConfig = require("../config/db.config");
 const multer = require("multer");
 const path = require("path");
 
-let connection;
+// let connection;
 
 async function addNewResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -82,6 +83,7 @@ async function addNewResident(req, res) {
 // GET Function
 
 async function getAllResidentsDetails(req, res) {
+  let connection;
   try {
     console.log("Resident Get func Called");
 
@@ -103,7 +105,8 @@ async function getAllResidentsDetails(req, res) {
     const total = totalResult[0].count;
 
     return res.status(200).json({
-      result: result, total: total
+      result: result,
+      total: total,
     });
   } catch (error) {
     console.error("Failed to retrieve Residents Details", error);
@@ -149,7 +152,7 @@ async function searchDetails(req, res) {
       searchPattern,
       searchPattern,
       limit,
-      offset
+      offset,
     ]);
 
     const totalQuery = `
@@ -172,13 +175,12 @@ async function searchDetails(req, res) {
       searchPattern,
       searchPattern,
       searchPattern,
-      searchPattern
+      searchPattern,
     ]);
 
     const total = totalResult[0].count;
 
     return res.status(200).json({ result: result, total: total });
-
   } catch (error) {
     console.error("Failed to search data", error);
     return res.status(500).json({ message: "Search Process Failed" });
@@ -192,6 +194,7 @@ async function searchDetails(req, res) {
 // Get By Id Function (residentID)
 
 async function getResidentById(req, res) {
+  let connection;
   try {
     console.log("Called with Resident ID");
 
@@ -218,6 +221,7 @@ async function getResidentById(req, res) {
 // Get By Id Function (UnitID)
 
 async function getResidentByUnitID(req, res) {
+  let connection;
   try {
     console.log("Called with Unit ID");
 
@@ -245,6 +249,7 @@ async function getResidentByUnitID(req, res) {
 // DELETE Function
 
 async function deleteResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -278,6 +283,7 @@ async function deleteResident(req, res) {
 // EDIT Function
 
 async function updateResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -358,5 +364,5 @@ module.exports = {
   getResidentByUnitID,
   deleteResident,
   updateResident,
-  searchDetails
+  searchDetails,
 };
