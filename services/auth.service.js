@@ -98,7 +98,9 @@ async function login(req, res) {
     const user = await getUserByID(userID);
 
     if (user == null) {
-      return res.status(401).json({ message: "Invalid username" });
+      res.clearCookie("token");
+      res.clearCookie("refresh_token");
+      return res.status(201).json({ message: "Invalid username" });
     }
     // If User name is correct compare password with the entered password
     const checkValidPassword = bcrypt.compareSync(password, user.userPassword);
@@ -143,6 +145,10 @@ async function login(req, res) {
         refreshToken: refreshToken,
         userId: userID,
       });
+    } else {
+      res.clearCookie("token");
+      res.clearCookie("refresh_token");
+      return res.status(201).json({ message: "Invalid Password" });
     }
   } catch (error) {
     console.error("Database operation failed", error);
