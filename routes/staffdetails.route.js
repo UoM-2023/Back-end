@@ -8,6 +8,7 @@ router.post("/addNewStaff", newStaff.addNewStaff);
 
 // Get Requests
 router.get("/addNewStaff", newStaff.getAllStaffDetails);
+router.get('/searchStaff',newStaff.searchStaffDetails);
 router.get("/addNewStaff/updateStaff/:staffID", newStaff.getStaffById);
 
 // Delete Requests

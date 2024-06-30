@@ -2,8 +2,9 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 async function addNewPayment(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { user_id, unit_id, charge_type, method, amount, payment_id } =
       req.body;
@@ -61,22 +62,113 @@ async function addNewPayment(req, res) {
   } catch (error) {
     console.error("Failed to save data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function getAllPayments(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    connection = await mysql.createConnection(dbConfig);
 
     const query =
-      "SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID";
+      "SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID AND member_type = 'Owner' ORDER BY rp.payment_date DESC LIMIT ? OFFSET ?";
 
-    const result = await connection.query(query);
+    const result = await connection.query(query,[limit, offset]);
+    console.log(result);
 
-    return res.status(200).json({ result: result });
+    const totalQuery = `SELECT COUNT(*) as count 
+      FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID AND ri.member_type = 'Owner'`;
+    const [totalResult] = await connection.query(totalQuery);
+    const total = totalResult[0].count;
+    return res.status(200).json({ result: result, total: total });
+
   } catch (error) {
     console.error("Failed to retrieve data", error);
     return res.status(201).json({ message: "Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
-module.exports = { addNewPayment, getAllPayments };
+
+async function searchPayments(req, res) {
+  let connection;
+  try {
+    const queryParam = req.query.query || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    connection = await mysql.createConnection(dbConfig);
+
+    console.log("Search Called");
+
+    const searchQuery = `
+      SELECT rp.*, ri.name_with_initials 
+      FROM recieved_payments rp 
+      INNER JOIN Residents_Information ri 
+      ON rp.unit_id = ri.UnitID 
+      AND member_type = 'Owner'
+      WHERE rp.payment_id LIKE ? OR
+            ri.name_with_initials LIKE ? OR
+            rp.amount LIKE ? OR
+            rp.payment_date LIKE ?
+      ORDER BY rp.payment_date DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    const searchPattern = `%${queryParam}%`;
+    const [result] = await connection.query(searchQuery, [
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      limit,
+      offset
+    ]);
+
+    const totalQuery = `
+      SELECT COUNT(*) as count 
+      FROM recieved_payments rp 
+      INNER JOIN Residents_Information ri 
+      ON rp.unit_id = ri.UnitID 
+      AND ri.member_type = 'Owner'
+      WHERE rp.payment_id LIKE ? OR
+            ri.name_with_initials LIKE ? OR
+            rp.amount LIKE ? OR
+            rp.payment_date LIKE ?
+      ORDER BY rp.payment_date DESC
+    `;
+
+    const [totalResult] = await connection.query(totalQuery, [
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern
+    ]);
+
+    const total = totalResult[0].count;
+
+    console.log(result);
+
+    return res.status(200).json({ result: result, total: total });
+
+  } catch (error) {
+    console.error("Failed to search data", error);
+    return res.status(500).json({ message: "Search Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+module.exports = { addNewPayment, getAllPayments, searchPayments };

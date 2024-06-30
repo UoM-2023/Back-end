@@ -2,10 +2,10 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
-
+let connection;
 async function add_Internal_Mnt_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       Maintenance,
@@ -53,6 +53,10 @@ async function add_Internal_Mnt_Request(req, res) {
     return res.status(201).json({
       message: "Oops! There was an issue Adding Internal Maintenance Details",
     });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -60,7 +64,7 @@ async function get_All_Internal_Mnt_Requests(req, res) {
   try {
     console.log("called");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Internal_Mnt_Requests ORDER BY completed_date DESC`;
 
@@ -72,6 +76,10 @@ async function get_All_Internal_Mnt_Requests(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Internal Maintenance Requests" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
@@ -81,7 +89,7 @@ async function get_A_Internal_Mnt_Request(req, res) {
   try {
     console.log("Called with id");
 
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const query = `SELECT * FROM Internal_Mnt_Requests WHERE id = ?`;
     const id = req.params.id;
@@ -94,12 +102,16 @@ async function get_A_Internal_Mnt_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to retrieve Internal Maintenance Requests" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function update_Internal_Mnt_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const {
       Maintenance,
@@ -149,12 +161,16 @@ async function update_Internal_Mnt_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to Update Internal Maintenance" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
 async function delete_Internal_Mnt_Request(req, res) {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
     const id = req.params.id;
 
     const query = "DELETE FROM Internal_Mnt_Requests WHERE id = ?";
@@ -171,6 +187,10 @@ async function delete_Internal_Mnt_Request(req, res) {
     return res
       .status(500)
       .json({ message: "Failed to update Internal Maintenance Request" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 module.exports = {

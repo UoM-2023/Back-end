@@ -7,7 +7,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const config = require("./config/db.config");
 const database = require("./database/database");
-const mysql = require('mysql2/promise');
+const mysql = require("mysql2/promise");
 const socketIo = require("socket.io");
 const socketManager = require("./sockets/socketManager");
 const multer = require("multer");
@@ -25,7 +25,7 @@ const staffdetailsRoute = require("./routes/staffdetails.route");
 const residentialUnitsRoute = require("./routes/residentialunits.route");
 const newsNoticesRoute = require("./routes/newsnnotices.route");
 const complaintsRoute = require("./routes/complaints.route");
-const socketHandlers = require('./sockets/socketHandlers');
+const socketHandlers = require("./sockets/socketHandlers");
 const GuestDetailsRoute = require("./routes/guest.route");
 const ReservationsRoute = require("./routes/reservation.route");
 const FacilityRoute = require("./routes/facility.route");
@@ -35,6 +35,22 @@ const settingsRoute = require("./routes/settings.route");
 
 // Configurations
 const app = express();
+//const server = http.createServer(app);
+
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+//   },
+// });
+
+// const PORT = process.env.PORT || 3001;
+// const server = http.createServer(app);
+// const io = socketIo(server, {
+//   path: "/socket.io", // Default path, but can be customized
+// });
+
 dotenv.config();
 
 const corsOptions = {
@@ -64,7 +80,11 @@ async function runScripts() {
 
 runScripts();
 
-// API Routes
+require("./controller/cronJob.controller");
+// require('./controller/cronJobTesing.controller');
+// socketManager.initializeSocket(server);
+
+// Api Routes
 app.use("/", apiRoutes);
 app.use("/health", healthRoute);
 app.use("/auth", authRoute);
