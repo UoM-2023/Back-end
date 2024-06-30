@@ -68,6 +68,12 @@ router.put(
   "/Update_Mnt_Req/:id",
   New_Maintenance_Request.update_Maintenance_Request
 );
+
+router.put(
+  "/Update_cancelled_Req/:id",
+  New_Maintenance_Request.update_Cancelled_Maintenance_Request
+)
+
 router.delete(
   "/New_Mnt_Req/:id",
   New_Maintenance_Request.delete_Maintenance_Request
@@ -76,5 +82,8 @@ router.put(
   "/New_Mnt_Req/status/:id",
   New_Maintenance_Request.update_Maintenance_Request_Status
 );
+router.get(
+  "/New_Mnt_Req_search", New_Maintenance_Request.searchMaintenanceDetails
+)
 
 module.exports = router;

@@ -57,7 +57,7 @@ async function getAllNotices(req, res) {
 
         connection = await mysql.createConnection(dbConfig);
 
-        const query = 'SELECT * FROM Notices';
+        const query = 'SELECT * FROM Notices ORDER BY N_Date DESC';
         
         const [rows] = await connection.query(query);
         console.log(rows);
