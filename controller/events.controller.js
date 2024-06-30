@@ -40,7 +40,7 @@ async function getAllEvents(req, res) {
 
         const connection = await mysql.createConnection(dbConfig);
 
-        const query = 'SELECT * FROM NN_Events';
+        const query = 'SELECT * FROM NN_Events ORDER BY Event_no DESC';
         
         const [rows] = await connection.query(query);
         console.log(rows);
