@@ -11,11 +11,13 @@ router.post("/addNewResident", newResident.addNewResident);
 
 // Get Requests
 router.get("/addNewResident", newResident.getAllResidentsDetails);
+router.get("/searchResident", newResident.searchDetails);
 router.get(
   "/addNewResident/updateResident/:residentID",
   newResident.getResidentById
 );
 router.get("/viewResident/:UnitID", newResident.getResidentByUnitID);
+
 
 // Delete Requests
 router.delete(

@@ -52,8 +52,8 @@ async function addUtilityCharge(req, res) {
 
     // Inserint to main utility table
     const [utilityResult] = await connection.query(
-      `INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?, 'AP0001F', CURRENT_TIMESTAMP)`,
-      [unit_id, month, previousBalance, totalCost, newBalance, staffID]
+      `INSERT INTO monthUtilityCharge (unit_id, util_month, prev_balance, month_amount, tot_amount, staff_id, added_date) VALUES (?, ?, ?, ?, ?,  'AP0001F', CURRENT_TIMESTAMP)`,
+      [unit_id, month, previousBalance, totalCost, newBalance]
     );
 
     console.log(utilityResult);
@@ -73,10 +73,12 @@ async function addUtilityCharge(req, res) {
     );
     return res
       .status(200)
-      .json({ message: "Utility details updated successfully." });
+      .json({ message: "Utility Charges Details Updated Successfully!" });
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Adding Utility Charges." });
   } finally {
     await connection.end();
   }
@@ -137,7 +139,7 @@ async function getUtilityCharges(req, res) {
             waterUsage wu ON muc.id = wu.utilityCharge_id
         LEFT JOIN 
             elecUsage eu ON muc.id = eu.utilityCharge_id
-        ORDER BY muc.added_date DESC ;
+        ORDER BY muc.added_date DESC
         `;
 
     const [result] = await connection.query(query);
@@ -145,7 +147,9 @@ async function getUtilityCharges(req, res) {
     return res.status(200).json({ result: result });
   } catch (error) {
     console.error("Failed to retrieve data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Getting Utility Details." });
   } finally {
     if (connection) {
       await connection.end();

@@ -2,9 +2,10 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
-let connection;
+// let connection;
 
 async function add_Completed_Mnt_Request(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
     const {
@@ -61,6 +62,7 @@ async function add_Completed_Mnt_Request(req, res) {
 // GET all Function
 
 async function get_All_Completed_Mnt_Request(req, res) {
+  let connection;
   try {
     console.log("get_All_Completed_Mnt_Request called");
 
@@ -96,6 +98,7 @@ async function get_All_Completed_Mnt_Request(req, res) {
 // Get By Id Function
 
 async function get_A_Completed_Mnt_Request(req, res) {
+  let connection;
   try {
     console.log("Called with id");
 
@@ -122,6 +125,7 @@ async function get_A_Completed_Mnt_Request(req, res) {
 // EDIT Function
 
 async function update_completed_Mnt_Request(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 

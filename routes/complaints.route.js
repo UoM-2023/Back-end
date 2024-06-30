@@ -8,6 +8,7 @@ router.post('/newComplaint',complaints.addNewComplaint);
 
 //Get Request
 router.get('/newComplaint', complaints.getAllComplaints);
+router.get('/searchComplaint',complaints.searchComplaints);
 router.get('/newComplaint/:id', complaints.getAComplaint);
 
 //Put Request

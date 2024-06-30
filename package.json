@@ -14,6 +14,7 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
+    "engine.io": "^6.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
@@ -26,7 +27,8 @@
     "mysql2": "^3.9.4",
     "node-cron": "^3.0.3",
     "path": "^0.12.7",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
