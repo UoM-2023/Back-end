@@ -4,54 +4,40 @@ const dbConfig = require("../config/db.config");
 let connection;
 //add facility
 async function facilityReserve(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
-    const { facility_name, amount_charge, charge_per, availability } = req.body;
+    const { facility_name, amount_charge, charge_per } = req.body;
 
-    console.log(facility_name, amount_charge, charge_per, availability);
+    console.log(facility_name, amount_charge, charge_per);
 
     const add =
-      "INSERT INTO Facilities (facility_name, amount_charge, charge_per, availability) VALUES (?, ?, ?, ?)";
+      "INSERT INTO Facilities (facility_name, amount_charge, charge_per) VALUES (?, ?, ?)";
 
     try {
-      connection = await mysql.createConnection(dbConfig);
-
-      const { facility_name, amount_charge, charge_per, availability } =
-        req.body;
-
-      console.log(facility_name, amount_charge, charge_per, availability);
-
-      const add =
-        "INSERT INTO Facilities (facility_name, amount_charge, charge_per, availability) VALUES (?, ?, ?, ?)";
-
-      try {
-        await connection.query(add, [
-          facility_name,
-          amount_charge,
-          charge_per,
-          "Available",
-        ]);
-        return res
-          .status(200)
-          .json({ message: "Facility reserved successfully" });
-      } catch (error) {
-        console.error("Failed to save data", error);
-        return res.status(500).json({ message: "Failed to reserve facility" });
-      }
+      await connection.query(add, [
+        facility_name,
+        amount_charge,
+        charge_per,
+      ]);
+      return res
+        .status(200)
+        .json({ message: "Facility reserved successfully" });
     } catch (error) {
-      console.error("Failed to connect to database", error);
-      return res.status(500).json({ message: "Failed to connect to database" });
-    } finally {
-      if (connection) {
-        await connection.end();
-      }
+      console.error("Failed to save data", error);
+      return res.status(500).json({ message: "Failed to reserve facility" });
     }
   } catch (error) {
     console.error("Failed to connect to database", error);
     return res.status(500).json({ message: "Failed to connect to database" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
+
 
 //get all data  from facility reserve
 
@@ -107,34 +93,33 @@ async function updateFacility(req, res) {
   try {
     const connection = await mysql.createConnection(dbConfig);
 
-    const { facility_name, amount_charge, charge_per, availability } = req.body;
+    const { facility_name, amount_charge, charge_per } = req.body;
 
     const id = req.params.id;
 
-    console.log(facility_name, amount_charge, charge_per, availability);
+    console.log(facility_name, amount_charge, charge_per);
 
     const query =
-      "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ?, availability = ? WHERE ref_no = ?";
+      "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ?  WHERE ref_no = ?";
 
     try {
       connection = await mysql.createConnection(dbConfig);
 
-      const { facility_name, amount_charge, charge_per, availability } =
+      const { facility_name, amount_charge, charge_per } =
         req.body;
 
       const id = req.params.id;
 
-      console.log(facility_name, amount_charge, charge_per, availability);
+      console.log(facility_name, amount_charge, charge_per);
 
       const query =
-        "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ?, availability = ? WHERE ref_no = ?";
+        "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ? WHERE ref_no = ?";
 
       try {
         await connection.query(query, [
           facility_name,
           amount_charge,
           charge_per,
-          availability,
           id,
         ]);
         return res

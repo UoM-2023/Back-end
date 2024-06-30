@@ -12,8 +12,11 @@ async function addGuestDetails(req, res) {
       guest_name,
       guest_NIC,
       vehicle_number,
+      arrival_date,
       check_In,
       check_Out,
+      checkin_Time,
+      checkout_Time,
     } = req.body;
 
     console.log(
@@ -21,12 +24,15 @@ async function addGuestDetails(req, res) {
       guest_name,
       guest_NIC,
       vehicle_number,
+      arrival_date,
       check_In,
-      check_Out
+      check_Out,
+      checkin_Time,
+      checkout_Time
     );
 
     const add =
-      "INSERT INTO Guest_Details (unit_ID, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO Guest_Details (unit_ID,  guest_name, guest_NIC, vehicle_number, arrival_date, check_In, check_Out, checkin_Time, checkout_Time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try {
       await connection.query(add, [
@@ -34,8 +40,11 @@ async function addGuestDetails(req, res) {
         guest_name,
         guest_NIC,
         vehicle_number,
+        arrival_date,
         check_In,
         check_Out,
+        checkin_Time,
+        checkout_Time,
       ]);
       await connection.end(); // Close the connection
       return res.status(200).json({ message: "Guest Successfully Added!" });
@@ -182,8 +191,11 @@ async function updateGuestDetails(req, res) {
       guest_name,
       guest_NIC,
       vehicle_number,
+      arrival_date,
       check_In,
       check_Out,
+      checkin_Time,
+      checkout_Time,
     } = req.body;
 
     const id = req.params.id;
@@ -193,12 +205,15 @@ async function updateGuestDetails(req, res) {
       guest_name,
       guest_NIC,
       vehicle_number,
+      arrival_date,
       check_In,
-      check_Out
+      check_Out,
+      checkin_Time,
+      checkout_Time
     );
 
     const query =
-      "UPDATE Guest_Details SET unit_ID = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, check_In = ?, check_Out = ? WHERE guest_ID = ?";
+      "UPDATE Guest_Details SET unit_ID = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, arrival_date = ?, check_In = ?, check_Out = ?, checkin_Time = ?, checkout_Time = ?, WHERE guest_ID = ?";
 
     try {
       await connection.query(query, [
@@ -206,8 +221,11 @@ async function updateGuestDetails(req, res) {
         guest_name,
         guest_NIC,
         vehicle_number,
+        arrival_date,
         check_In,
         check_Out,
+        checkin_Time,
+        checkout_Time,
         id,
       ]);
       return res
