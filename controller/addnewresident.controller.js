@@ -3,9 +3,10 @@ const dbConfig = require("../config/db.config");
 const multer = require("multer");
 const path = require("path");
 
-let connection;
+// let connection;
 
 async function addNewResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -82,6 +83,7 @@ async function addNewResident(req, res) {
 // GET Function
 
 async function getAllResidentsDetails(req, res) {
+  let connection;
   try {
     console.log("Resident Get func Called");
 
@@ -192,6 +194,7 @@ async function searchDetails(req, res) {
 // Get By Id Function (residentID)
 
 async function getResidentById(req, res) {
+  let connection;
   try {
     console.log("Called with Resident ID");
 
@@ -218,6 +221,7 @@ async function getResidentById(req, res) {
 // Get By Id Function (UnitID)
 
 async function getResidentByUnitID(req, res) {
+  let connection;
   try {
     console.log("Called with Unit ID");
 
@@ -245,6 +249,7 @@ async function getResidentByUnitID(req, res) {
 // DELETE Function
 
 async function deleteResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -278,6 +283,7 @@ async function deleteResident(req, res) {
 // EDIT Function
 
 async function updateResident(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
