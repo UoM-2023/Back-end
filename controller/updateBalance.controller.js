@@ -12,6 +12,8 @@ async function updateBalanace(req, res) {
 
         const [funds] = await connection.query(query);
 
+
+
         console.log(funds);
 
         funds.forEach(fund => {
@@ -21,10 +23,16 @@ async function updateBalanace(req, res) {
               managementFundAmount = fund.amount;
             }
         });
+        
+        const updateQuery = `
+            UPDATE balance
+            SET sinking_balance = COALESCE(sinking_balance, 0) + ?,
+                management_balance = COALESCE(management_balance, 0) + ?
+        `;
+        console.log(managementFundAmount, sinkingFundAmount)
+        const [updateResult] = await connection.query(updateQuery,[sinkingFundAmount, managementFundAmount]);
 
-        await connection.query('UPDATE balance SET sinking_balance = sinking_balance + ?, management_balance = management_balance + ?',[sinkingFundAmount, managementFundAmount]);
-
-        console.log('Balances updated successfully');
+        console.log('Balances updated successfully', updateResult);
 
         // return res.status(200).json({ message: "Balances Updated Successfully" });
 
