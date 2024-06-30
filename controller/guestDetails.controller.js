@@ -3,12 +3,12 @@ const dbConfig = require('../config/db.config');
 
 
 //add guest details
-let connection;
 
 async function addGuestDetails(req, res) {
+    let connection;
     try {
         connection = await mysql.createConnection(dbConfig);
-
+        
         const {
             unit_ID,
             resident_name,
@@ -51,17 +51,26 @@ module.exports = addGuestDetails; // Ensure you export the function
 
 
 async function getAllGuestDetails(req, res) {
+    let connection;
     try {
         console.log("called");
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
         connection = await mysql.createConnection(dbConfig);
+        
+        const query = `SELECT * FROM Guest_Details LIMIT ? OFFSET ?`;
 
-        const query = `SELECT * FROM Guest_Details`;
+        const [result] = await connection.query(query, [limit, offset]); // Access the first element of the result array
 
-        const [result] = await connection.query(query); // Access the first element of the result array
+        const totalQuery = `SELECT COUNT(*) as count FROM Guest_Details`;
+        const [totalResult] = await connection.query(totalQuery);
+        const total = totalResult[0].count;
 
         console.log(result);
-        return res.status(200).json({ result: result }); // Send the result directly without accessing `result.recordset`
+        return res.status(200).json({ result: result, total: total }); // Send the result directly without accessing `result.recordset`
 
     } catch (error) {
         console.error('Failed to retrieve guest details', error);
@@ -73,7 +82,60 @@ async function getAllGuestDetails(req, res) {
     }
 }
 
+async function searchGuests(req, res) {
+    let connection;
+    try {
+        console.log("Called")
+        const query = req.query.query || "";
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
 
+        connection = await mysql.createConnection(dbConfig);
+
+        const searchQuery = `
+            SELECT * FROM Guest_Details
+            WHERE unit_ID LIKE ? OR
+                    guest_name LIKE ? OR
+                    vehicle_number LIKE ? OR
+                    guest_NIC LIKE ?
+            LIMIT ? OFFSET ?
+            `;
+        const searchPattern = `%${query}%`;
+        const [result] = await connection.query(searchQuery, [
+            searchPattern,
+            searchPattern,
+            searchPattern,
+            searchPattern,
+            limit,
+            offset
+        ]);
+
+        const totalQuery = `
+            SELECT COUNT(*) as count FROM Guest_Details
+            WHERE unit_ID LIKE ? OR
+                    guest_name LIKE ? OR
+                    vehicle_number LIKE ? OR
+                    guest_NIC LIKE ?
+        `;
+        const [totalResult] = await connection.query(totalQuery, [
+            searchPattern,
+            searchPattern,
+            searchPattern,
+            searchPattern
+          ]);
+          const total = totalResult[0].count;
+      
+          return res.status(200).json({ result: result, total: total });
+    } catch (error) {
+        console.error("Failed to search data", error);
+        return res.status(500).json({ message: "Search Process Failed" });
+    } finally {
+        if (connection) {
+          await connection.end();
+        }
+    }
+}
 
 //get a guest details
 
@@ -171,5 +233,5 @@ async function deleteGuestDetails(req, res) {
     }
 }
 
-module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails};
+module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails, searchGuests};
 

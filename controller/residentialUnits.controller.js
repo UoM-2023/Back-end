@@ -44,6 +44,7 @@ async function getAllUnits(req, res) {
     try {
         console.log("Called");
 
+
         connection = await mysql.createConnection(dbConfig);
 
         const query = `SELECT * FROM ResidentialUnit`;

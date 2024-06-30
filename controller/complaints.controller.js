@@ -1,11 +1,11 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config');
 
-let connection;
+// let connection;
 
 async function addNewComplaint(req, res) {
     try {
-        connection = await mysql.createConnection(dbConfig);
+        let connection = await mysql.createConnection(dbConfig);
 
         try {
             const {
@@ -40,19 +40,27 @@ async function addNewComplaint(req, res) {
 
 
 async function getAllComplaints(req, res) {
+    let connection;
     try {
         console.log("called");
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
 
         connection = await mysql.createConnection(dbConfig);
 
-        const query = 'SELECT * FROM Complaints';
+        const query = 'SELECT * FROM Complaints LIMIT ? OFFSET ?';
         
-        const [rows] = await connection.query(query);
-        console.log(rows);
+        const [result] = await connection.query(query,[limit, offset]);
 
-        await connection.end(); // Properly close the connection
+        console.log(result);
 
-        return res.status(200).json({ result: rows });
+        const totalQuery = `SELECT COUNT(*) as count FROM Complaints`;
+        const [totalResult] = await connection.query(totalQuery);
+        const total = totalResult[0].count;
+        // await connection.end(); // Properly close the connection
+
+        return res.status(200).json({ result: result, total: total  });
 
     } catch (error) {
         console.error('Failed to retrieve complaints', error);
@@ -64,6 +72,73 @@ async function getAllComplaints(req, res) {
     }
 }
 
+async function searchComplaints(req, res) {
+    let connection;
+    try {
+      const query = req.query.query || "";
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+  
+      connection = await mysql.createConnection(dbConfig);
+  
+      const searchQuery = `
+        SELECT * FROM Complaints
+        WHERE Reference_id LIKE ? OR
+              Nature LIKE ? OR
+              Title LIKE ? OR
+              Complained_by LIKE ? OR
+              C_Date LIKE ? OR
+              C_Description LIKE ? OR
+              CStatus LIKE ?
+        LIMIT ? OFFSET ?
+      `;
+  
+      const searchPattern = `%${query}%`;
+      const [result] = await connection.query(searchQuery, [
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        limit,
+        offset
+      ]);
+  
+      const totalQuery = `
+        SELECT COUNT(*) as count FROM Complaints
+        WHERE Reference_id LIKE ? OR
+              Nature LIKE ? OR
+              Title LIKE ? OR
+              Complained_by LIKE ? OR
+              C_Date LIKE ? OR
+              C_Description LIKE ? OR
+              CStatus LIKE ?
+      `;
+  
+      const [totalResult] = await connection.query(totalQuery, [
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern,
+        searchPattern
+      ]);
+      const total = totalResult[0].count;
+  
+      return res.status(200).json({ result: result, total: total });
+    } catch (error) {
+      console.error("Failed to search data", error);
+      return res.status(500).json({ message: "Search Process Failed" });
+    } finally {
+      if (connection) {
+        await connection.end();
+      }
+    }
+  }
 
 async function getAComplaint(req, res) {
     try {
@@ -102,7 +177,7 @@ async function getAComplaint(req, res) {
 
 async function updateComplaint(req,res){
     try {
-        connection = await mysql.createConnection(dbConfig);
+        let connection = await mysql.createConnection(dbConfig);
 
         const {
             Nature,
@@ -141,7 +216,7 @@ async function updateComplaint(req,res){
 
 async function deleteComplaint(req,res){
     try {
-        connection = await mysql.createConnection(dbConfig);
+        let connection = await mysql.createConnection(dbConfig);
         const id = req.params.id;
 
         const query = 'DELETE FROM Complaints WHERE Reference_id = ?'
@@ -164,7 +239,7 @@ async function deleteComplaint(req,res){
     }
 }
 
-module.exports = {addNewComplaint, getAllComplaints, getAComplaint, updateComplaint, deleteComplaint};
+module.exports = {addNewComplaint, getAllComplaints, getAComplaint, updateComplaint, deleteComplaint, searchComplaints};
 
 
 

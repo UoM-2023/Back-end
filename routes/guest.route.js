@@ -10,6 +10,7 @@ router.post('/GuestDetails',newGuest.addGuestDetails);
 //get
 router.get('/GuestDetails',newGuest.getAllGuestDetails);
 router.get('/GuestDetails/:id',newGuest.getAGuestDetail);
+router.get('/searchGuests', newGuest.searchGuests);
 
 //update
 router.put('/GuestDetails/:id',newGuest.updateGuestDetails);

@@ -76,5 +76,8 @@ router.put(
   "/New_Mnt_Req/status/:id",
   New_Maintenance_Request.update_Maintenance_Request_Status
 );
+router.get(
+  "/New_Mnt_Req_search", New_Maintenance_Request.searchMaintenanceDetails
+)
 
 module.exports = router;

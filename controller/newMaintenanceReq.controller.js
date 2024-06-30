@@ -2,8 +2,8 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 // POST Function
-let connection;
 async function add_Maintenance_Request(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -45,17 +45,26 @@ async function add_Maintenance_Request(req, res) {
 // GET all Function
 
 async function get_All_Maintenance_Requests(req, res) {
+  let connection;
   try {
     console.log("called");
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    
     connection = await mysql.createConnection(dbConfig);
+    
+    const query = `SELECT * FROM Maintenance_Requests ORDER BY requested_date DESC LIMIT ? OFFSET ?`;
 
-    const query = `SELECT * FROM Maintenance_Requests ORDER BY requested_date DESC`;
-
-    const [result] = await connection.query(query);
+    const [result] = await connection.query(query, [limit, offset]);
     //console.log(result);
 
-    return res.status(200).json({ result: result });
+    const totalQuery = `SELECT COUNT(*) as count FROM Maintenance_Requests`;
+    const [totalResult] = await connection.query(totalQuery);
+    const total = totalResult[0].count;
+
+    return res.status(200).json({ result: result, total: total });
   } catch (error) {
     console.error("Failed to retrieve Maintenance Requests", error);
     return res
@@ -68,9 +77,76 @@ async function get_All_Maintenance_Requests(req, res) {
   }
 }
 
+async function searchMaintenanceDetails(req, res) {
+  let connection;
+  try {
+    const query = req.query.query || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    console.log("This is called")
+    connection = await mysql.createConnection(dbConfig);
+
+    const searchQuery = `SELECT * FROM Maintenance_Requests WHERE
+      Mnt_Request_id LIKE ? OR
+      Unit_id LIKE ? OR 
+      MType LIKE ? OR 
+      Mnt_Status LIKE ? OR
+      requested_date LIKE ? OR
+      M_Description LIKE ?
+    ORDER BY requested_date DESC
+    LIMIT ? OFFSET ?`;
+
+    const searchPattern = `%${query}%`;
+    const [result] = await connection.query(searchQuery, [
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      limit,
+      offset
+    ]);
+
+    const totalQuery = `
+    SELECT COUNT(*) as count FROM Maintenance_Requests
+    WHERE Mnt_Request_id LIKE ? OR
+    Unit_id LIKE ? OR 
+    MType LIKE ? OR 
+    Mnt_Status LIKE ? OR
+    requested_date LIKE ? OR
+    M_Description LIKE ?
+    `;
+
+    const [totalResult] = await connection.query(totalQuery, [
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern,
+      searchPattern
+    ]);
+
+    const total = totalResult[0].count;
+
+    return res.status(200).json({ result: result, total: total });
+
+  } catch (error) {
+    console.error("Failed to search data", error);
+    return res.status(500).json({ message: "Search Process Failed" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
 // Get By Id Function
 
 async function get_A_Maintenance_Request(req, res) {
+  let connection;
   try {
     console.log("Called with id la la :", req.params.id);
 
@@ -96,6 +172,7 @@ async function get_A_Maintenance_Request(req, res) {
 }
 
 async function getMaintenanceRequestsByUser(req, res) {
+  let connection;
   try {
     const unitId = req.params.Unit_id;
 
@@ -134,6 +211,7 @@ async function getMaintenanceRequestsByUser(req, res) {
 // EDIT Function
 
 async function update_Maintenance_Request(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -179,6 +257,7 @@ async function update_Maintenance_Request(req, res) {
 // DELETE Function
 
 async function delete_Maintenance_Request(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -210,6 +289,7 @@ async function delete_Maintenance_Request(req, res) {
 }
 
 async function update_Maintenance_Request_Status(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
     const { id } = req.params;
@@ -246,4 +326,5 @@ module.exports = {
   update_Maintenance_Request,
   delete_Maintenance_Request,
   update_Maintenance_Request_Status,
+  searchMaintenanceDetails
 };

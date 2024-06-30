@@ -83,7 +83,7 @@ runScripts();
 
 require("./controller/cronJob.controller");
 // require('./controller/cronJobTesing.controller');
-socketManager.initializeSocket(server);
+// socketManager.initializeSocket(server);
 
 // Api Routes
 app.use("/", apiRoutes);
