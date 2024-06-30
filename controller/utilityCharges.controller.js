@@ -73,10 +73,12 @@ async function addUtilityCharge(req, res) {
     );
     return res
       .status(200)
-      .json({ message: "Utility details updated successfully." });
+      .json({ message: "Utility Charges Details Updated Successfully!" });
   } catch (error) {
     console.error("Failed to save data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Adding Utility Charges." });
   } finally {
     await connection.end();
   }
@@ -145,7 +147,9 @@ async function getUtilityCharges(req, res) {
     return res.status(200).json({ result: result });
   } catch (error) {
     console.error("Failed to retrieve data", error);
-    return res.status(201).json({ message: "Process Failed" });
+    return res
+      .status(201)
+      .json({ message: "Oops! There was an issue Getting Utility Details." });
   } finally {
     if (connection) {
       await connection.end();
