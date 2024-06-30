@@ -16,11 +16,7 @@ async function facilityReserve(req, res) {
       "INSERT INTO Facilities (facility_name, amount_charge, charge_per) VALUES (?, ?, ?)";
 
     try {
-      await connection.query(add, [
-        facility_name,
-        amount_charge,
-        charge_per,
-      ]);
+      await connection.query(add, [facility_name, amount_charge, charge_per]);
       return res
         .status(200)
         .json({ message: "Facility reserved successfully" });
@@ -37,7 +33,6 @@ async function facilityReserve(req, res) {
     }
   }
 }
-
 
 //get all data  from facility reserve
 
@@ -90,95 +85,55 @@ async function getAFacility(req, res) {
 
 //update a facility
 async function updateFacility(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
 
     const { facility_name, amount_charge, charge_per } = req.body;
-
     const id = req.params.id;
 
     console.log(facility_name, amount_charge, charge_per);
 
     const query =
-      "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ?  WHERE ref_no = ?";
+      "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ? WHERE ref_no = ?";
 
-    try {
-      connection = await mysql.createConnection(dbConfig);
-
-      const { facility_name, amount_charge, charge_per } =
-        req.body;
-
-      const id = req.params.id;
-
-      console.log(facility_name, amount_charge, charge_per);
-
-      const query =
-        "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ? WHERE ref_no = ?";
-
-      try {
-        await connection.query(query, [
-          facility_name,
-          amount_charge,
-          charge_per,
-          id,
-        ]);
-        return res
-          .status(200)
-          .json({ message: "Facility Successfully Updated" });
-      } catch (error) {
-        console.error("Failed to update facility", error);
-        return res.status(500).json({ message: "Failed to update facility" });
-      }
-    } catch (error) {
-      console.error("Failed to connect to database", error);
-      return res.status(500).json({ message: "Failed to connect to database" });
-    } finally {
-      if (connection) {
-        await connection.end();
-      }
-    }
+    await connection.query(query, [
+      facility_name,
+      amount_charge,
+      charge_per,
+      id,
+    ]);
+    return res.status(200).json({ message: "Facility Successfully Updated" });
   } catch (error) {
-    console.error("Failed to connect to database", error);
-    return res.status(500).json({ message: "Failed to connect to database" });
+    console.error("Failed to update facility", error);
+    return res.status(500).json({ message: "Failed to update facility" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
-//delete facility
+// delete facility
 async function deleteFacility(req, res) {
+  let connection;
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    connection = await mysql.createConnection(dbConfig);
     const id = req.params.id;
-
     const query = "DELETE FROM Facilities WHERE ref_no = ?";
 
-    try {
-      connection = await mysql.createConnection(dbConfig);
-      const id = req.params.id;
+    await connection.execute(query, [id]); // Use execute instead of query for prepared statements
 
-      const query = "DELETE FROM Facilities WHERE ref_no = ?";
-
-      try {
-        await connection.query(query, [id]);
-        // If deletion is successful, return success message
-        return res
-          .status(200)
-          .json({ message: "Facility Successfully Deleted" });
-      } catch (error) {
-        console.error("Failed to delete data", error);
-        // If deletion fails, return failure message
-        return res.status(500).json({ message: "Failed to delete facility" });
-      }
-    } catch (error) {
-      console.error("Failed to connect to database", error);
-      return res.status(500).json({ message: "Failed to connect to database" });
-    } finally {
-      if (connection) {
-        await connection.end();
-      }
-    }
+    // If deletion is successful, return success message
+    return res.status(200).json({ message: "Facility Successfully Deleted" });
   } catch (error) {
-    console.error("Failed to connect to database", error);
-    return res.status(500).json({ message: "Failed to connect to database" });
+    console.error("Failed to delete data", error);
+    // If deletion fails, return failure message
+    return res.status(500).json({ message: "Failed to delete facility" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
