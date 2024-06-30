@@ -67,6 +67,39 @@ async function addGuestDetails(req, res) {
 
 //get all guest details
 
+// async function getAllGuestDetails(req, res) {
+//   let connection;
+//   try {
+//     console.log("called");
+
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const offset = (page - 1) * limit;
+
+//     connection = await mysql.createConnection(dbConfig);
+
+//     const query = `SELECT * FROM Guest_Details LIMIT ? OFFSET ?`;
+
+//     const [result] = await connection.query(query, [limit, offset]); // Access the first element of the result array
+
+//     const totalQuery = `SELECT COUNT(*) as count FROM Guest_Details`;
+//     const [totalResult] = await connection.query(totalQuery);
+//     const total = totalResult[0].count;
+
+//     console.log(result);
+//     return res.status(200).json({ result: result, total: total }); // Send the result directly without accessing `result.recordset`
+//   } catch (error) {
+//     console.error("Failed to retrieve guest details", error);
+//     return res
+//       .status(500)
+//       .json({ message: "Failed to retrieve guest details" });
+//   } finally {
+//     if (connection) {
+//       await connection.end();
+//     }
+//   }
+// }
+
 async function getAllGuestDetails(req, res) {
   let connection;
   try {
@@ -78,16 +111,42 @@ async function getAllGuestDetails(req, res) {
 
     connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Guest_Details LIMIT ? OFFSET ?`;
+    const query = `
+        SELECT 
+          *
+        FROM 
+          Guest_Details 
+        ORDER BY check_In DESC
+        LIMIT ? OFFSET ?`;
 
-    const [result] = await connection.query(query, [limit, offset]); // Access the first element of the result array
+    const [result] = await connection.query(query, [limit, offset]);
 
     const totalQuery = `SELECT COUNT(*) as count FROM Guest_Details`;
     const [totalResult] = await connection.query(totalQuery);
     const total = totalResult[0].count;
 
+    const formattedResult = result.map((row) => {
+      const localDate = new Date(row.check_In);
+      const timezoneOffset = localDate.getTimezoneOffset() * 60000; // Convert to milliseconds
+      const localTime = new Date(localDate.getTime() - timezoneOffset);
+      return {
+        ...row,
+        check_In: localTime.toISOString().split("T")[0],
+      };
+    });
+
+    // const formattedResultt = result.map((row) => {
+    //     const localDate = new Date(row.checkout_Time);
+    //     const timezoneOffset = localDate.getTimezoneOffset() * 60000; // Convert to milliseconds
+    //     const localTime = new Date(localDate.getTime() - timezoneOffset);
+    //     return {
+    //       ...row,
+    //       checkout_Time: localTime.toISOString().split("T")[0],
+    //     };
+    //   });
+
     console.log(result);
-    return res.status(200).json({ result: result, total: total }); // Send the result directly without accessing `result.recordset`
+    return res.status(200).json({ result: formattedResult, total });
   } catch (error) {
     console.error("Failed to retrieve guest details", error);
     return res
@@ -117,6 +176,7 @@ async function searchGuests(req, res) {
                     guest_name LIKE ? OR
                     vehicle_number LIKE ? OR
                     guest_NIC LIKE ?
+            ORDER BY check_In DESC
             LIMIT ? OFFSET ?
             `;
     const searchPattern = `%${query}%`;
@@ -182,6 +242,7 @@ async function getAGuestDetail(req, res) {
 //update guest Details
 
 async function updateGuestDetails(req, res) {
+  let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -213,7 +274,7 @@ async function updateGuestDetails(req, res) {
     );
 
     const query =
-      "UPDATE Guest_Details SET unit_ID = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, arrival_date = ?, check_In = ?, check_Out = ?, checkin_Time = ?, checkout_Time = ?, WHERE guest_ID = ?";
+      "UPDATE Guest_Details SET unit_ID = ?, guest_name = ?, guest_NIC = ?, vehicle_number = ?, arrival_date = ?, check_In = ?, check_Out = ?, checkin_Time = ?, checkout_Time = ? WHERE guest_ID = ?";
 
     try {
       await connection.query(query, [
