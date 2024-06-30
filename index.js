@@ -106,8 +106,8 @@ app.use("/maintenance", maintenanceRoute);
 app.use("/Settings", settingsRoute);
 
 // Socket.IO
-socketHandlers(io);
-
+// socketHandlers(io);
+   
 
 // Socket connection
 // const users = {};

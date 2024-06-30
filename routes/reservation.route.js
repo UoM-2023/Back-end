@@ -10,6 +10,7 @@ router.post("/Reservations", Reservations.addReservation);
 router.get("/Reservations", Reservations.getAllReservations);
 router.get("/Reservations/:id", Reservations.getAReservation);
 router.get("/Reservations/facilityname/:facility_name", Reservations.getAllByFaciName);
+router.get("/Reservations_by_user/:Unit_id",Reservations.getReservationRequestsByUser);
 
 //update
 router.put("/Reservations/:id", Reservations.updateReservation);

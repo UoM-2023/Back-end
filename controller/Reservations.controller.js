@@ -9,33 +9,36 @@ async function addReservation(req, res) {
 
     const {
       facility_name,
-      resident_name,
+      Unit_id,
       start_date,
       end_date,
-      payment_status,
+      start_time,
+      end_time,
       availability,
     } = req.body;
 
     console.log(
       facility_name,
-      resident_name,
+      Unit_id,
       start_date,
       end_date,
-      payment_status,
+      start_time,
+      end_time,
       availability
     );
 
     //checkdown query parameters
     const add =
-      "INSERT INTO Reservations (facility_name, resident_name, start_date, end_date, requested_date, payment_status,availability) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
+      "INSERT INTO Reservations (facility_name, Unit_id,  start_date, end_date, start_time, end_time, requested_date,availability) VALUES (?, ?,  ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)";
 
     try {
       await connection.query(add, [
         facility_name,
-        resident_name,
+        Unit_id,
         start_date,
         end_date,
-        payment_status,
+        start_time,
+        end_time,
         availability,
       ]);
 
@@ -74,6 +77,42 @@ async function getAllReservations(req, res) {
   } catch (error) {
     console.error("Failed to get all  reservations", error);
     return res.status(500).json({ message: "Failed to get all  reservations" });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+async function getReservationRequestsByUser(req, res) {
+  try {
+    const unitId = req.params.Unit_id;
+
+    console.log(`Called with id Get maintenance: ${unitId}`);
+    console.log("Attempting to connect to the database...");
+    connection = await mysql.createConnection(dbConfig);
+
+    console.log("Database connection established.");
+
+    const query = `SELECT * FROM Reservations WHERE Unit_id = ?`;
+
+    console.log(`Executing query: ${query} with parameter ${unitId}`);
+    const [rows] = await connection.query(query, [unitId]);
+
+    console.log("Query executed. Result:", rows);
+
+    if (rows.length === 0) {
+      console.log("No reservation requests found for this Unit_id.");
+      return res.status(404).json({ message: "Reservation request not found" });
+    }
+
+    return res.status(200).json({ result: rows });
+  } catch (error) {       
+    console.error("Failed to retrieve reservation requests", error);
+    return res.status(500).json({
+      message: "Failed to retrieve reservation requests",
+      error: error.message,
+    });
   } finally {
     if (connection) {
       await connection.end();
@@ -264,6 +303,7 @@ async function deleteReservation(req, res) {
 module.exports = {
   addReservation,
   getAllReservations,
+  getReservationRequestsByUser,
   getAReservation,
   updateReservation,
   deleteReservation,

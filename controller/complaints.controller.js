@@ -100,6 +100,42 @@ async function getAComplaint(req, res) {
 }
 
 
+async function getSupportRequestsByUser(req, res) {
+    try {
+      const unitId = req.params.Complained_by;
+  
+      console.log(`Called with id Get support: ${unitId}`);
+      console.log("Attempting to connect to the database...");
+      connection = await mysql.createConnection(dbConfig);
+  
+      console.log("Database connection established.");
+  
+      const query = `SELECT * FROM Complaints WHERE Complained_by = ?`;
+  
+      console.log(`Executing query: ${query} with parameter ${unitId}`);
+      const [rows] = await connection.query(query, [unitId]);
+  
+      console.log("Query executed. Result:", rows);
+  
+      if (rows.length === 0) {
+        console.log("No support requests found for this Unit_id.");
+        return res.status(404).json({ message: "support request not found" });
+      }
+  
+      return res.status(200).json({ result: rows });
+    } catch (error) {       
+      console.error("Failed to retrieve support requests", error);
+      return res.status(500).json({
+        message: "Failed to retrieve support requests",
+        error: error.message,
+      }); 
+    } finally {
+      if (connection) {
+        await connection.end();
+      }
+    }
+  }
+
 async function updateComplaint(req,res){
     try {
         connection = await mysql.createConnection(dbConfig);
@@ -164,7 +200,7 @@ async function deleteComplaint(req,res){
     }
 }
 
-module.exports = {addNewComplaint, getAllComplaints, getAComplaint, updateComplaint, deleteComplaint};
+module.exports = {addNewComplaint, getAllComplaints, getAComplaint, updateComplaint, deleteComplaint,getSupportRequestsByUser};
 
 
 

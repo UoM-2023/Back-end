@@ -7,41 +7,63 @@ let connection;
 
 async function addGuestDetails(req, res) {
     try {
-        connection = await mysql.createConnection(dbConfig);
-
-        const {
-            unit_ID,
-            resident_name,
-            guest_name,
-            guest_NIC,
-            vehicle_number,
-            check_In,
-            check_Out
-        } = req.body;
-
-        console.log( unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out);
-
-        const add = 'INSERT INTO Guest_Details (unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out) VALUES (?, ?, ?, ?, ?, ?, ?)'; 
-
-        try {
-            await connection.query(add, [unit_ID, resident_name, guest_name, guest_NIC, vehicle_number, check_In, check_Out]);
-            await connection.end(); // Close the connection
-            return res.status(200).json({ message: 'Guest Successfully Added!' });
-        } catch (error) {
-            console.error('Failed to save data', error);
-            await connection.end(); // Close the connection even on error
-            return res.status(500).json({ message: 'Process Failed' });
-        }
-
+      connection = await mysql.createConnection(dbConfig);
+  
+      const {
+        unit_ID,
+        guest_name,
+        guest_NIC,
+        vehicle_number,
+        arrival_date,
+        check_In,
+        check_Out,
+        checkin_Time,
+        checkout_Time,
+      } = req.body;
+  
+      console.log(
+        unit_ID,
+        guest_name,
+        guest_NIC,
+        vehicle_number,
+        arrival_date,
+        check_In,
+        check_Out,
+        checkin_Time,
+        checkout_Time
+      );
+  
+      const add =
+        "INSERT INTO Guest_Details (unit_ID,  guest_name, guest_NIC, vehicle_number, arrival_date, check_In, check_Out, checkin_Time, checkout_Time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  
+      try {
+        await connection.query(add, [
+          unit_ID,
+          guest_name,
+          guest_NIC,
+          vehicle_number,
+          arrival_date,
+          check_In,
+          check_Out,
+          checkin_Time,
+          checkout_Time,
+        ]);
+        await connection.end(); // Close the connection
+        return res.status(200).json({ message: "Guest Successfully Added!" });
+      } catch (error) {
+        console.error("Failed to save data", error);
+        await connection.end(); // Close the connection even on error
+        return res.status(500).json({ message: "Process Failed" });
+      }
     } catch (error) {
-        console.error('Failed to connect to database', error);
-        return res.status(500).json({ message: 'Process Failed' });
+      console.error("Failed to connect to database", error);
+      return res.status(500).json({ message: "Process Failed" });
     } finally {
-        if (connection) {
-          await connection.end();
-        }
+      if (connection) {
+        await connection.end();
+      }
     }
-}
+  }
 
 module.exports = addGuestDetails; // Ensure you export the function
 
@@ -99,6 +121,42 @@ async function getAGuestDetail(req, res) {
         }
     }
 }
+
+async function getGuestRequestsByUser(req, res) {
+    try {
+      const unitId = req.params.unit_ID;
+  
+      console.log(`Called with id Get guest: ${unitId}`);
+      console.log("Attempting to connect to the database...");
+      connection = await mysql.createConnection(dbConfig);
+  
+      console.log("Database connection established.");
+  
+      const query = `SELECT * FROM Guest_Details WHERE unit_ID = ?`;
+  
+      console.log(`Executing query: ${query} with parameter ${unitId}`);
+      const [rows] = await connection.query(query, [unitId]);
+  
+      console.log("Query executed. Result:", rows);
+  
+      if (rows.length === 0) {
+        console.log("No guest requests found for this Unit_id.");
+        return res.status(404).json({ message: "guest request not found" });
+      }
+  
+      return res.status(200).json({ result: rows });
+    } catch (error) {       
+      console.error("Failed to retrieve guest requests", error);
+      return res.status(500).json({
+        message: "Failed to retrieve guest requests",
+        error: error.message,
+      });
+    } finally {
+      if (connection) {
+        await connection.end();
+      }
+    }
+  }
 
 
 //update guest Details
@@ -171,5 +229,5 @@ async function deleteGuestDetails(req, res) {
     }
 }
 
-module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails};
+module.exports = {addGuestDetails, getAllGuestDetails,getAGuestDetail,updateGuestDetails, deleteGuestDetails,getGuestRequestsByUser};
 

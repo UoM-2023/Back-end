@@ -9,6 +9,7 @@ router.post('/newComplaint',complaints.addNewComplaint);
 //Get Request
 router.get('/newComplaint', complaints.getAllComplaints);
 router.get('/newComplaint/:id', complaints.getAComplaint);
+router.get('/newComplaint_by_user_id/:Complained_by', complaints.getSupportRequestsByUser)
 
 //Put Request
 router.put('/newComplaint/:id', complaints.updateComplaint);

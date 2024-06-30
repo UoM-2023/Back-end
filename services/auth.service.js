@@ -46,7 +46,6 @@ async function register(req, res) {
   }
 }
 
-
 async function refresh(req, res) {
   try {
     console.log("Cookies:", req.cookies);
