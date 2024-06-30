@@ -15,7 +15,7 @@ const {
 } = require("../controller/utilityCharges.controller");
 const { verifyToken, checkRole } = require("../middlewares/auth.middleware");
 const { getAUserCharge } = require("../controller/getAUserCharge.controller");
-const { getAllBalance } = require('../controller/getAllBalance.controller');
+const { getAllBalance, searchBalance } = require('../controller/getAllBalance.controller');
 const { sendPaymentWarning } = require('../controller/sendPaymentWarning.controller');
 const { updateBalanace } = require("../controller/upDateBalance.controller");
 
@@ -52,6 +52,10 @@ router.get('/getUtilityCharges', getUtilityCharges);
 router.get('/getAUserCharge/:id', getAUserCharge);
 router.get('/getAllPayments', verifyToken,newPayment.getAllPayments);
 router.get('/getAllBalance',getAllBalance);
+router.get('/revenue/search',newRevenue.searchRevenues);
+router.get('/expenses/search', newExpense.searchExpenses );
+router.get('/paymentSearch',verifyToken,newPayment.searchPayments);
+router.get('/searchBalance',searchBalance);
 
 
 // Put Requests
