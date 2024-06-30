@@ -81,7 +81,7 @@ async function addNewStaff(req, res) {
     if (connection) {
       await connection.end();
     }
-}
+  }
 }
 
 // GET all Function
