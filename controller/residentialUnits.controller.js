@@ -59,6 +59,8 @@ async function getAllUnits(req, res) {
       console.error("Failed to retrieve residential units:", error);
       await connection.end(); // Ensure the connection is closed in case of error
       return res
+
+      
         .status(500)
         .json({ message: "Failed to retrieve residential units" });
     }

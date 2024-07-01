@@ -43,7 +43,7 @@ async function getAllComplaints(req, res) {
 
     connection = await mysql.createConnection(dbConfig);
 
-    const query = "SELECT * FROM Complaints LIMIT ? OFFSET ?";
+    const query = "SELECT * FROM Complaints ORDER BY Reference_id DESC LIMIT ? OFFSET ? ";
 
     const [result] = await connection.query(query, [limit, offset]);
 

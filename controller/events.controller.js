@@ -2,6 +2,7 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/db.config");
 
 async function addNewEvent(req, res) {
+    let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -40,6 +41,7 @@ async function addNewEvent(req, res) {
 }
 
 async function getAllEvents(req, res) {
+    let connection;
   try {
     console.log("called");
 
@@ -74,6 +76,7 @@ async function getAllEvents(req, res) {
 }
 
 async function getAnEvent(req, res) {
+    let connection;
   try {
     console.log("Called with id");
 
@@ -107,6 +110,7 @@ async function getAnEvent(req, res) {
 }
 
 async function updateEvent(req, res) {
+    let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -144,6 +148,7 @@ async function updateEvent(req, res) {
 }
 
 async function deleteEvent(req, res) {
+    let connection;
   try {
     connection = await mysql.createConnection(dbConfig);
     const id = req.params.id;
