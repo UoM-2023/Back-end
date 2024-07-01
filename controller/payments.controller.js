@@ -81,7 +81,7 @@ async function getAllPayments(req, res) {
     const query =
       "SELECT rp.*, ri.name_with_initials FROM recieved_payments rp INNER JOIN Residents_Information ri ON rp.unit_id = ri.UnitID AND member_type = 'Owner' ORDER BY rp.payment_date DESC LIMIT ? OFFSET ?";
 
-    const result = await connection.query(query,[limit, offset]);
+    const result = await connection.query(query, [limit, offset]);
     console.log(result);
 
     const totalQuery = `SELECT COUNT(*) as count 
@@ -89,7 +89,6 @@ async function getAllPayments(req, res) {
     const [totalResult] = await connection.query(totalQuery);
     const total = totalResult[0].count;
     return res.status(200).json({ result: result, total: total });
-
   } catch (error) {
     console.error("Failed to retrieve data", error);
     return res.status(201).json({ message: "Process Failed" });
@@ -133,7 +132,7 @@ async function searchPayments(req, res) {
       searchPattern,
       searchPattern,
       limit,
-      offset
+      offset,
     ]);
 
     const totalQuery = `
@@ -153,7 +152,7 @@ async function searchPayments(req, res) {
       searchPattern,
       searchPattern,
       searchPattern,
-      searchPattern
+      searchPattern,
     ]);
 
     const total = totalResult[0].count;
@@ -161,7 +160,6 @@ async function searchPayments(req, res) {
     console.log(result);
 
     return res.status(200).json({ result: result, total: total });
-
   } catch (error) {
     console.error("Failed to search data", error);
     return res.status(500).json({ message: "Search Process Failed" });

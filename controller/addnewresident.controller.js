@@ -105,7 +105,8 @@ async function getAllResidentsDetails(req, res) {
     const total = totalResult[0].count;
 
     return res.status(200).json({
-      result: result, total: total
+      result: result,
+      total: total,
     });
   } catch (error) {
     console.error("Failed to retrieve Residents Details", error);
@@ -151,7 +152,7 @@ async function searchDetails(req, res) {
       searchPattern,
       searchPattern,
       limit,
-      offset
+      offset,
     ]);
 
     const totalQuery = `
@@ -174,13 +175,12 @@ async function searchDetails(req, res) {
       searchPattern,
       searchPattern,
       searchPattern,
-      searchPattern
+      searchPattern,
     ]);
 
     const total = totalResult[0].count;
 
     return res.status(200).json({ result: result, total: total });
-
   } catch (error) {
     console.error("Failed to search data", error);
     return res.status(500).json({ message: "Search Process Failed" });
@@ -364,5 +364,5 @@ module.exports = {
   getResidentByUnitID,
   deleteResident,
   updateResident,
-  searchDetails
+  searchDetails,
 };

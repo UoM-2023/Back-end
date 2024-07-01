@@ -97,13 +97,40 @@ async function updateFacility(req, res) {
     const query =
       "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ? WHERE ref_no = ?";
 
-    await connection.query(query, [
-      facility_name,
-      amount_charge,
-      charge_per,
-      id,
-    ]);
-    return res.status(200).json({ message: "Facility Successfully Updated" });
+    try {
+      connection = await mysql.createConnection(dbConfig);
+
+      const { facility_name, amount_charge, charge_per } = req.body;
+
+      const id = req.params.id;
+
+      console.log(facility_name, amount_charge, charge_per);
+
+      const query =
+        "UPDATE Facilities SET facility_name = ?, amount_charge = ?, charge_per = ? WHERE ref_no = ?";
+
+      try {
+        await connection.query(query, [
+          facility_name,
+          amount_charge,
+          charge_per,
+          id,
+        ]);
+        return res
+          .status(200)
+          .json({ message: "Facility Successfully Updated" });
+      } catch (error) {
+        console.error("Failed to update facility", error);
+        return res.status(500).json({ message: "Failed to update facility" });
+      }
+    } catch (error) {
+      console.error("Failed to connect to database", error);
+      return res.status(500).json({ message: "Failed to connect to database" });
+    } finally {
+      if (connection) {
+        await connection.end();
+      }
+    }
   } catch (error) {
     console.error("Failed to update facility", error);
     return res.status(500).json({ message: "Failed to update facility" });
