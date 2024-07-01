@@ -45,9 +45,12 @@ async function getAllEvents(req, res) {
 
     connection = await mysql.createConnection(dbConfig);
 
-    const query = "SELECT * FROM NN_Events";
+        const query = 'SELECT * FROM NN_Events ORDER BY Event_no DESC';
+        
+        const [rows] = await connection.query(query);
+        console.log(rows);
 
-    const [rows] = await connection.query(query);
+    // const [rows] = await connection.query(query);
 
     rows.map((row) => {
       const date = new Date(row.S_Date);

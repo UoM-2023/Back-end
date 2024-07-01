@@ -67,11 +67,21 @@ async function getAllReservations(req, res) {
 
     connection = await mysql.createConnection(dbConfig);
 
-    const query = `SELECT * FROM Reservations`;
+    const query = `SELECT * FROM Reservations  ORDER BY requested_date DESC`;
 
     const [result] = await connection.query(query);
+
+    const formattedResult = result.map((row) => {
+      const localDate = new Date(row.requested_date);
+      const timezoneOffset = localDate.getTimezoneOffset() * 60000; // Convert to milliseconds
+      const localTime = new Date(localDate.getTime() - timezoneOffset);
+      return {
+        ...row,
+        requested_date: localTime.toISOString().split("T")[0],
+      };
+    });
     // console.log(result);
-    return res.status(200).json({ result: result });
+    return res.status(200).json({ result: formattedResult, result });
   } catch (error) {
     console.error("Failed to get all  reservations", error);
     return res.status(500).json({ message: "Failed to get all  reservations" });
